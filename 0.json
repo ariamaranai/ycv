@@ -1,0 +1,18 @@
+[
+  {
+    "id": 1,
+    "priority": 2147483647,
+    "action": {
+      "type": "redirect",
+      "redirect": {
+        "regexSubstitution": "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=\\2/"
+      }
+    },
+    "condition": {
+      "resourceTypes": ["main_frame"],
+      "requestMethods": ["get"],
+      "domainType": "thirdParty",
+      "regexFilter": "^https://(www\\.youtube\\.com/watch\\?.*?v=|youtu.be/)(.{11}).*?/$"
+    }
+  }
+]

@@ -1,0 +1,61 @@
+:root {
+  display: unset;
+  position: absolute;
+  left: calc(50% - 240px);
+  top: 4px;
+  width: 480px;
+  background-color: #111;
+  font-size: 14px;
+  font-family: math;
+  color: #ddd;
+  line-height: 24px;
+  tab-size: 124px;
+  white-space: pre-wrap;
+  overflow-y: scroll
+}
+.r {
+  transform: translateX(24px) scale(.9)
+}
+img {
+  display: flow;
+  position: absolute;
+  left: 0;
+  width: 40px;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none
+}
+s {
+  display: contents;
+  font-size: 12px;
+  color: #bbb
+}
+dt {
+  box-sizing: border-box;
+  margin-bottom: 48px;
+  padding-left: 48px;
+  word-break: break-all
+}
+i {
+  display: flow;
+  contain: size;
+  cursor: pointer;
+  font-style: unset;
+  font-size: 15px;
+  white-space: pre;
+  user-select: none
+}
+a {
+  display: flow;
+  width: fit-content;
+  font-size: 12px;
+  margin-left: 128px;
+  color: #ddd;
+  text-decoration: unset
+}
+title {
+  display: flow;
+  margin: 16px 0 0 126px;
+  font-weight: 600;
+  line-height: 1
+}
