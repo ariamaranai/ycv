@@ -8,11 +8,11 @@
   },
   "permissions": [
     "alarms",
+    "browsingData",
     "contentSettings",
     "contextMenus",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
-    "storage",
     "userScripts"
   ],
   "host_permissions": [

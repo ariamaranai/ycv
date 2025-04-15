@@ -2,6 +2,9 @@ chrome.contentSettings.javascript.set({
   primaryPattern: "https://www.youtube.com/*",
   setting: "allow"
 });
+chrome.browsingData.removeServiceWorkers({
+  origins: ["https://www.youtube.com"]
+});
 
 chrome.alarms.onAlarm.addListener(() =>
   chrome.contentSettings.javascript.set({
@@ -55,10 +58,7 @@ chrome.runtime.onInstalled.addListener(() => (
     title: "Like all comments",
     contexts: ["video", "frame", "link"],
     targetUrlPatterns: [
-      "https://www.youtube.com/watch?v=*",
-      "https://www.youtube.com/embed/*",
-      "https://www.youtube.com/shorts/*",
-      "https://youtu.be/*"
+      "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*/"
     ]
   }),
   chrome.userScripts.configureWorld({
