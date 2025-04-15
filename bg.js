@@ -58,7 +58,7 @@ chrome.runtime.onInstalled.addListener(() => (
     title: "Like all comments",
     contexts: ["video", "frame", "link"],
     targetUrlPatterns: [
-      "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*/"
+      "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*"
     ]
   }),
   chrome.userScripts.configureWorld({
@@ -67,7 +67,7 @@ chrome.runtime.onInstalled.addListener(() => (
   chrome.userScripts.register([{
     id: "0",
     js: [{ file: "main.js" }],
-    matches: ["https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*/"],
+    matches: ["https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*"],
     runAt: "document_start"
   }])
 ));

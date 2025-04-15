@@ -6,7 +6,11 @@
   newRoot.content = "initial-scale=yes";
 
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
+  
+  let continuation;
+  let body;
   let accountsHeaders = [];
+
   
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
@@ -16,8 +20,8 @@
 
     newRoot.innerHTML =
       "<img style=width:120px;border-radius:0 src=//i.ytimg.com/vi/" +
-      location.href.slice(-12) +
-      "hqdefault.jpg><title>" +
+      location.href.slice(-11) +
+      "/hqdefault.jpg><title>" +
       e[1].content +
       "</title><a target=_blank href=" +
       (e = e[6]).firstChild.href +
@@ -30,7 +34,9 @@
       "  💬 " +
       (e = (p = code.indexOf("contextualInfo", 300000)) > 0 ? code.slice(p += 34, p = code.indexOf('"', p)) : "-") +
       "\n\n";
-    
+
+    continuation = code.substr(p + 1305, 100);
+    body = '{"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}';
     if (+e[0]) {
       let cookie = d.cookie;
       let n = cookie.indexOf("SAPISID=");
@@ -40,12 +46,11 @@
         let txt = await (await fetch ("/getAccountSwitcherEndpoint")).text();
         p = 3000;
         while ((p = txt.indexOf('Selected":', p)) > 0) {
-          let isSelected = txt[p + 10] == "f";
+          let isSelected = txt[p + 10] != "f";
           let url = txt.slice(p = txt.indexOf("/", p + 200), txt.indexOf('"', p));
-          console.log(url);
-          let thtml = isSelected ? await (await fetch(url)).text() : oldRoot.firstChild.textContent;
+          let thtml = isSelected ? oldRoot.firstChild.textContent : await (await fetch(url)).text();
           let hash = new Uint8Array(await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
-            thtml.substr(thtml.indexOf("USER_SESSION_ID", 400000) + 18, + 21), + SAPISID
+            thtml.substr(thtml.indexOf("USER_SESSION_ID", 400000) + 18, + 21) + SAPISID
           )));
           let key = "_u";
           let i = 20;
@@ -55,25 +60,28 @@
             i
           );
           let authorization = "SAPISIDHASH 1_" + key + " SAPISID1PHASH 1_" + key + " SAPISID3PHASH 1_" + key;
-
           accountsHeaders.push(
-            url.length > 127
+            url.length > 210
               ? { authorization,
                   "x-goog-authuser": i = url.slice(43, url.indexOf("&", 44)),
                   "x-goog-pageid": url.substr(i.length + 51, 21)
                 }
               : { authorization }
+            /*isSelected
+              ? code.substr(p + 1305, 100)
+              : thtml.substr(thtml.indexOf("Newest first", 900000) + 235, 100),*/
           );
           p += 300;
         }
       }
+      accountsHeaders[0] ??= null;
+      for (let i = 0; i < accountsHeaders.length; ++i) {
+        fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+          body,
+          headers: accountsHeaders[i],
+          method: "POST"
+        });
+      }
     }
   });
-  /*
-  (await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
-    body: '{"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
-    headers: accountsHeaders[1],
-    method: "POST"
-  })).json());
-  */
 }
