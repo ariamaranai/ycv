@@ -19,7 +19,7 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
     setting: "block"
   }),
   chrome.alarms.create({
-    delayInMinutes: .1
+    delayInMinutes: .05
   })
 ));
 
@@ -51,14 +51,6 @@ chrome.runtime.onInstalled.addListener(() => (
       "https://www.youtube.com/embed/*",
       "https://www.youtube.com/shorts/*",
       "https://youtu.be/*"
-    ]
-  }),
-  chrome.contextMenus.create({
-    id: "1",
-    title: "Like all comments",
-    contexts: ["video", "frame", "link"],
-    targetUrlPatterns: [
-      "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*"
     ]
   }),
   chrome.userScripts.configureWorld({

@@ -13,7 +13,7 @@
   let continuationNewest;
   let continuationNext;
   let isAutoLiked = 0;
-  
+
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
     let e = bodyChilds[0].childNodes;
@@ -73,13 +73,13 @@
         };
       }
 
-      let observer = new IntersectionObserver(entries => {
-        if (newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight) {
-          fetchNext(continuationNext, 0, 0);
-        }
-      }, { rootMargin: "16776399px 0px 0px", threshold: 1 });
+      let observer = new IntersectionObserver(entries =>
+        newRoot.scrollTop &&
+        entries[0].intersectionRect.height == newRoot.offsetHeight &&
+          fetchNext(continuationNext, 0, 0),
+        { rootMargin: "16776399px 0px 120px", threshold: 1 }
+      );
       isAutoLiked || observer.observe(newRoot);
-
       let fetchNext = async (continuation, isFirst, isReply) => {
         let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
           body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
@@ -128,7 +128,8 @@
             if (mutations[i].payload.commentEntityPayload.toolbar.replyCount) {
               await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
             }
-          }
+          } else
+            commentBlock.className = "r";
         } while ((i += 5) < mutations.length);
 
         if (!isReply) {
@@ -138,9 +139,8 @@
             if (isAutoLiked) {
               await fetchNext(continuationNext, 0, 0);
             }
-          } else {
+          } else
             return observer.disconnect();
-          }
         }
       }
       onclick = e => {
@@ -157,9 +157,9 @@
             target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
           }
         } else if (tagName == "IMG") {
-          let src = { target };
+          let { src } = target;
           if (src[8] == "i") {
-            open("https://www.youtube.com/watch?v=" + src.slice.slice(23, 34));
+            open("https://www.youtube.com/watch?v=" + src.slice(23, 34));
           } else {
       
           }
