@@ -67,7 +67,7 @@ chrome.runtime.onInstalled.addListener(() => (
   chrome.userScripts.register([{
     id: "0",
     js: [{ file: "main.js" }],
-    matches: ["https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=*"],
+    matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
     runAt: "document_start"
   }])
 ));

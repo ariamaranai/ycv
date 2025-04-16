@@ -6,15 +6,19 @@
   newRoot.content = "initial-scale=yes";
 
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
-  
+
+  let _commentBlock = d.createElement("dt");
+  _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("i"));
+
   let continuationNewest;
-  let accountsHeaders = [];
+  let continuationNext;
+  let isAutoLiked = 0;
   
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
     let e = bodyChilds[0].childNodes;
     let code = bodyChilds[bodyChilds.length - 5].text;
-    let p = code.indexOf("viewCount", 4400) + 65;
+    let p = code.indexOf('viewCount', 3000) + 65;
 
     newRoot.innerHTML =
       "<img style=width:120px;border-radius:0 src=//i.ytimg.com/vi/" +
@@ -26,94 +30,138 @@
       ">" +
       e.lastChild.getAttribute("content") +
       "</a>\t ⚡ " +
-      code.slice(p, p = code.indexOf(" ", p)) +
+      code.slice(p, p = code.indexOf(" ", p)).replaceAll(".", ",") +
       "  ❤️ " +
-      ((code[p = code.indexOf("yText", p + 1300) + 8] == "l") ? code.slice(p += 27, code.indexOf(" ", p)) : "-") +
+      ((code[p = code.indexOf("yText", p + 1300) + 8] == "I")
+        ? code.slice(p += 23, code.indexOf(" ", p)).replaceAll(".", ",")
+        : "-") +
       "  💬 " +
-      (e = (p = code.indexOf("contextualInfo", 300000)) > 0 ? code.slice(p += 34, p = code.indexOf('"', p)) : "-") +
-      "\n\n";
+      (e = (p = code.indexOf("contextualInfo", 300000)) > 0
+        ? (e = code.slice(p += 34, p = code.indexOf('"', p))).length != 4
+          ? e.replaceAll(".", ",")
+          : e[0] + "," + e.slice(1)
+        : "-"
+      ) + "\n\n";
 
-    continuationNewest = code.substr(p + 1305, 100);
+    continuationNewest = code.substr(code.indexOf("Eg0SC", p + 700), 100);
+
     if (+e[0]) {
       let cookie = d.cookie;
       let n = cookie.indexOf("SAPISID=");
-      
-      if (n >= 0) {
-        let SAPISID = " 1 " + cookie.substr(n + 8, 34) + " https://www.youtube.com";
-        let txt = await (await fetch ("/getAccountSwitcherEndpoint")).text();
-        p = 3000;
-        while ((p = txt.indexOf('Selected":', p)) > 0) {
-          let isSelected = txt[p + 10] != "f";
-          let url = txt.slice(p = txt.indexOf("/", p + 200), txt.indexOf('"', p));
-          let thtml = isSelected ? oldRoot.firstChild.textContent : await (await fetch(url)).text();
-          let hash = new Uint8Array(await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
-            thtml.substr(thtml.indexOf("USER_SESSION_ID", 400000) + 18, + 21) + SAPISID
-          )));
-          let key = "_u";
-          let i = 20;
-          let n;
-          while (
-            key = "0123456789abcdef"[(n = hash[--i]) >> 4] + "0123456789abcdef"[n % 16] + key,
-            i
-          );
-          let authorization = "SAPISIDHASH 1_" + key + " SAPISID1PHASH 1_" + key + " SAPISID3PHASH 1_" + key;
-          accountsHeaders.push(
-            url.length > 210
-              ? { authorization,
-                  "x-goog-authuser": i = url.slice(43, url.indexOf("&", 44)),
-                  "x-goog-pageid": url.substr(i.length + 51, 21)
-                }
-              : { authorization }
-          );
-          p += 300;
-        }
-      }
-      accountsHeaders[0] ??= null;
+      let headers = { "content-type": "" };
 
-      let fetchNext = async (continuation, isFirst, isReply) => {
-        let i = accountsHeaders.length;
-        let responses = Array(i);
+      if (n >= 0) {
+        p = 3000;
+        let txt = oldRoot.firstChild.textContent;
+        let hash = new Uint8Array(
+          await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
+            txt.substr(txt.indexOf("USER_SESSION_ID", 450000) + 18, 21) +
+            " 1 " +
+            cookie.substr(n + 8, 34) +
+            " https://www.youtube.com"
+          ))
+        );
+        let key = "_u";
+        let i = 20;
         while (
-          responses[--i] = fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
-            body: '{"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
-            headers: accountsHeaders[i],
-            method: "POST"
-          }),
+          key = "0123456789abcdef"[(n = hash[--i]) >> 4] + "0123456789abcdef"[n % 16] + key,
           i
         );
-        let results = await Promise.all((await Promise.all(responses)).map(v => v.json()));
-        
-        let continuationItems;
+        headers = {
+          authorization: "SAPISIDHASH 1_" + key + " SAPISID1PHASH 1_" + key + " SAPISID3PHASH 1_" + key,
+          "content-type": ""
+        };
+      }
+
+      let observer = new IntersectionObserver(entries => {
+        if (newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight) {
+          fetchNext(continuationNext, 0, 0);
+        }
+      }, { rootMargin: "16776399px 0px 0px", threshold: 1 });
+      isAutoLiked || observer.observe(newRoot);
+
+      let fetchNext = async (continuation, isFirst, isReply) => {
+        let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+          body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
+          headers,
+          method: "POST"
+        })).json();
+
+        let { mutations } = r.frameworkUpdates.entityBatchUpdate;
+        let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[
+          isFirst
+            ? ("reloadContinuationItemsCommand")
+            : "appendContinuationItemsAction"];
+        let i = isFirst;
+
         do {
-          let result = results[i];
-          let { mutations } = result.frameworkUpdates.entityBatchUpdate;
-          continuationItems = result.onResponseReceivedEndpoints.at(-1)[isFirst ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"].continuationItems;
-          let j = isFirst;
-          do {
-            if (mutations[j + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
-              fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                body:
-                  '{"actions":["' +
-                  mutations[j + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action +
-                  '"],"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"1.2025011"}}}',
-                headers: accountsHeaders[i],
+          let commentBlock = _commentBlock.cloneNode(1);
+          let commentBlockNodes = commentBlock.childNodes;
+          let { commentEntityPayload } = mutations[i].payload;
+          let { properties, toolbar } = commentEntityPayload;
+          let { likeCountLiked } = toolbar;
+          let likedBlock = commentBlockNodes[4];
+
+          commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url.slice(6, -24) + "40-c";
+          commentBlockNodes[1].data = commentEntityPayload.author.displayName + " ";
+          commentBlockNodes[2].textContent = properties.publishedTime;
+          commentBlockNodes[3].data = "\n" + properties.content.content;
+
+          if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
+            let { action } = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint;
+            if (isAutoLiked) {
+              await fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
+                headers,
                 method: "POST"
               });
+              likedBlock.textContent = "❤️ " + likeCountLiked;
+            } else {
+              likedBlock.nonce = action;
+              likedBlock.textContent = likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍";
             }
-            if (!isReply) {
-              if (mutations[j].payload.commentEntityPayload.toolbar.replyCount) {
-                await fetchNext(continuationItems[Math.floor(j / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
-              }
+          } else
+            likedBlock.textContent = "❤️ " + likeCountLiked;
+          
+          newRoot.appendChild(commentBlock);
+          if (!isReply) {
+            if (mutations[i].payload.commentEntityPayload.toolbar.replyCount) {
+              await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
             }
-          } while ((j += 5) < mutations.length);
-        } while (++i < results.length);
+          }
+        } while ((i += 5) < mutations.length);
 
         if (!isReply) {
           let { continuationItemRenderer } = continuationItems.at(-1);
           if (continuationItemRenderer) {
-            await fetchNext(continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 0);
+            continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token;
+            if (isAutoLiked) {
+              await fetchNext(continuationNext, 0, 0);
+            }
           } else {
-            return;
+            return observer.disconnect();
+          }
+        }
+      }
+      onclick = e => {
+        let { target } = e;
+        let { tagName } = target;
+        if (tagName == "I") {
+          let { nonce } = target;
+          if (nonce) {
+            fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+              body: '{"actions":["' + nonce + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
+              headers,
+              method: "POST"
+            });
+            target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
+          }
+        } else if (tagName == "IMG") {
+          let src = { target };
+          if (src[8] == "i") {
+            open("https://www.youtube.com/watch?v=" + src.slice.slice(23, 34));
+          } else {
+      
           }
         }
       }
@@ -121,3 +169,4 @@
     }
   });
 }
+ondragstart = () => !1;

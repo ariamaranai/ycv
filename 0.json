@@ -5,7 +5,7 @@
     "action": {
       "type": "redirect",
       "redirect": {
-        "regexSubstitution": "https://www.youtube.com/watch?app=desktop&hl=en&persist_hl=1&v=\\2"
+        "regexSubstitution": "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=\\2"
       }
     },
     "condition": {
