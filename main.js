@@ -7,10 +7,8 @@
 
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
   
-  let continuation;
-  let body;
+  let continuationNewest;
   let accountsHeaders = [];
-
   
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
@@ -35,8 +33,7 @@
       (e = (p = code.indexOf("contextualInfo", 300000)) > 0 ? code.slice(p += 34, p = code.indexOf('"', p)) : "-") +
       "\n\n";
 
-    continuation = code.substr(p + 1305, 100);
-    body = '{"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}';
+    continuationNewest = code.substr(p + 1305, 100);
     if (+e[0]) {
       let cookie = d.cookie;
       let n = cookie.indexOf("SAPISID=");
@@ -67,21 +64,60 @@
                   "x-goog-pageid": url.substr(i.length + 51, 21)
                 }
               : { authorization }
-            /*isSelected
-              ? code.substr(p + 1305, 100)
-              : thtml.substr(thtml.indexOf("Newest first", 900000) + 235, 100),*/
           );
           p += 300;
         }
       }
       accountsHeaders[0] ??= null;
-      for (let i = 0; i < accountsHeaders.length; ++i) {
-        fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
-          body,
-          headers: accountsHeaders[i],
-          method: "POST"
-        });
+
+      let fetchNext = async (continuation, isFirst, isReply) => {
+        let i = accountsHeaders.length;
+        let responses = Array(i);
+        while (
+          responses[--i] = fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+            body: '{"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
+            headers: accountsHeaders[i],
+            method: "POST"
+          }),
+          i
+        );
+        let results = await Promise.all((await Promise.all(responses)).map(v => v.json()));
+        
+        let continuationItems;
+        do {
+          let result = results[i];
+          let { mutations } = result.frameworkUpdates.entityBatchUpdate;
+          continuationItems = result.onResponseReceivedEndpoints.at(-1)[isFirst ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"].continuationItems;
+          let j = isFirst;
+          do {
+            if (mutations[j + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
+              fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                body:
+                  '{"actions":["' +
+                  mutations[j + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action +
+                  '"],"context":{"client":{"hl":"en","gl":"US","clientName":1,"clientVersion":"1.2025011"}}}',
+                headers: accountsHeaders[i],
+                method: "POST"
+              });
+            }
+            if (!isReply) {
+              if (mutations[j].payload.commentEntityPayload.toolbar.replyCount) {
+                await fetchNext(continuationItems[Math.floor(j / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
+              }
+            }
+          } while ((j += 5) < mutations.length);
+        } while (++i < results.length);
+
+        if (!isReply) {
+          let { continuationItemRenderer } = continuationItems.at(-1);
+          if (continuationItemRenderer) {
+            await fetchNext(continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 0);
+          } else {
+            return;
+          }
+        }
       }
+      fetchNext(continuationNewest, 1, 0);
     }
   });
 }
