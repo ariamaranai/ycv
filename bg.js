@@ -6,27 +6,24 @@ chrome.browsingData.removeServiceWorkers({
   origins: ["https://www.youtube.com"]
 });
 
-chrome.alarms.onAlarm.addListener(() =>
+chrome.alarms.onAlarm.addListener(() => (
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "allow"
   })
-);
+));
 
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => (
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "block"
   }),
-  chrome.alarms.create({
-    delayInMinutes: .05
-  })
+  chrome.alarms.create({ delayInMinutes: .05 })
 ));
 
 chrome.action.onClicked.addListener(() => {
-
+  
 });
-
 chrome.contextMenus.onClicked.addListener(() => {
 
 });

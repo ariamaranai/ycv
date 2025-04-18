@@ -1,10 +1,7 @@
 {
   let d = document;
 
-  let newRoot = d.createElement("meta");
-  newRoot.name = "viewport";
-  newRoot.content = "initial-scale=yes";
-
+  let newRoot = d.createElement("body");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
 
   let _commentBlock = d.createElement("dt");
@@ -29,7 +26,7 @@
       (e = e[6]).firstChild.href +
       ">" +
       e.lastChild.getAttribute("content") +
-      "</a>\t ⚡ " +
+      "</a>\t⚡ " +
       code.slice(p, p = code.indexOf(" ", p)).replaceAll(".", ",") +
       "  ❤️ " +
       ((code[p = code.indexOf("yText", p + 1300) + 8] == "I")
@@ -77,9 +74,11 @@
         newRoot.scrollTop &&
         entries[0].intersectionRect.height == newRoot.offsetHeight &&
           fetchNext(continuationNext, 0, 0),
-        { rootMargin: "16776399px 0px 120px", threshold: 1 }
+        { rootMargin: "16776399px 0px 80px", threshold: 1 }
       );
       isAutoLiked || observer.observe(newRoot);
+
+      let timer;
       let fetchNext = async (continuation, isFirst, isReply) => {
         let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
           body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
@@ -90,7 +89,7 @@
         let { mutations } = r.frameworkUpdates.entityBatchUpdate;
         let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[
           isFirst
-            ? ("reloadContinuationItemsCommand")
+            ? "reloadContinuationItemsCommand"
             : "appendContinuationItemsAction"];
         let i = isFirst;
 
@@ -110,11 +109,14 @@
           if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
             let { action } = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint;
             if (isAutoLiked) {
-              await fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
-                headers,
-                method: "POST"
-              });
+              try {
+                fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                  body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
+                  headers,
+                  method: "POST",
+                  activateAfter: i * 127
+                });
+              } catch (e) {}
               likedBlock.textContent = "❤️ " + likeCountLiked;
             } else {
               likedBlock.nonce = action;
@@ -122,7 +124,6 @@
             }
           } else
             likedBlock.textContent = "❤️ " + likeCountLiked;
-          
           newRoot.appendChild(commentBlock);
           if (!isReply) {
             if (mutations[i].payload.commentEntityPayload.toolbar.replyCount) {
@@ -136,13 +137,12 @@
           let { continuationItemRenderer } = continuationItems.at(-1);
           if (continuationItemRenderer) {
             continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token;
-            if (isAutoLiked) {
-              await fetchNext(continuationNext, 0, 0);
-            }
+            isFirst && isAutoLiked && fetchNext(continuationNext, 0, 0);
           } else
-            return observer.disconnect();
+            return observer.disconnect(clearInterval(timer));
         }
       }
+
       onclick = e => {
         let { target } = e;
         let { tagName } = target;

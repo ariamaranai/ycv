@@ -12,7 +12,7 @@
       "resourceTypes": ["main_frame"],
       "requestMethods": ["get"],
       "domainType": "thirdParty",
-      "regexFilter": "^https://(www\\.youtube\\.com/watch\\?.*?v=|youtu.be/)(.{11}).*?;"
+      "regexFilter": "^https://(www\\.youtube\\.com/watch\\?.*?v=|youtu.be/)(.{11}).*?/"
     }
   }
 ]
