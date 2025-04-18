@@ -28,17 +28,17 @@
       e.lastChild.getAttribute("content") +
       "</a>\t⚡ " +
       code.slice(p, p = code.indexOf(" ", p)).replaceAll(".", ",") +
-      "  ❤️ " +
+      "　❤️ " +
       ((code[p = code.indexOf("yText", p + 1300) + 8] == "I")
         ? code.slice(p += 23, code.indexOf(" ", p)).replaceAll(".", ",")
         : "-") +
-      "  💬 " +
+      "　💬 " +
       (e = (p = code.indexOf("contextualInfo", 300000)) > 0
         ? (e = code.slice(p += 34, p = code.indexOf('"', p))).length != 4
           ? e.replaceAll(".", ",")
           : e[0] + "," + e.slice(1)
         : "-"
-      ) + "\n\n";
+      );
 
     continuationNewest = code.substr(code.indexOf("Eg0SC", p + 700), 100);
 
@@ -81,7 +81,7 @@
       let timer;
       let fetchNext = async (continuation, isFirst, isReply) => {
         let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
-          body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.2025011"}},"continuation":"' + continuation + '"}',
+          body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
           headers,
           method: "POST"
         })).json();
@@ -98,12 +98,12 @@
           let commentBlockNodes = commentBlock.childNodes;
           let { commentEntityPayload } = mutations[i].payload;
           let { properties, toolbar } = commentEntityPayload;
+          let { publishedTime } = properties;
           let { likeCountLiked } = toolbar;
           let likedBlock = commentBlockNodes[4];
-
           commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url.slice(6, -24) + "40-c";
           commentBlockNodes[1].data = commentEntityPayload.author.displayName + " ";
-          commentBlockNodes[2].textContent = properties.publishedTime;
+          commentBlockNodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
           commentBlockNodes[3].data = "\n" + properties.content.content;
 
           if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
@@ -111,7 +111,7 @@
             if (isAutoLiked) {
               try {
                 fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
+                  body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}}}',
                   headers,
                   method: "POST",
                   activateAfter: i * 127
@@ -155,11 +155,12 @@
               method: "POST"
             });
             target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
+            target.nonce = "";
           }
         } else if (tagName == "IMG") {
           let { src } = target;
           if (src[8] == "i") {
-            open("https://www.youtube.com/watch?v=" + src.slice(23, 34));
+            open("?v=" + src.slice(23, 34));
           } else {
       
           }

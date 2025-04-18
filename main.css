@@ -1,6 +1,6 @@
 :root {
   width: 412px;
-  margin: 4px auto;
+  margin: -48px auto 0;
   padding-left: 56px;
   background-color: #111;
   font-size: 14px;
@@ -17,7 +17,7 @@
 }
 img {
   display: flow;
-  margin: 0 0 -40px -48px;
+  margin: 72px 0 -40px -48px;
   width: 40px;
   border-radius: 20px;
   cursor: pointer;
@@ -30,9 +30,10 @@ s {
 }
 i {
   display: flow;
-  margin: 4px 0 40px 0;
+  contain: size;
   font-style: unset;
   font-size: 15px;
+  line-height: 32px;
   white-space: pre;
   user-select: none;
   cursor: pointer;
@@ -48,6 +49,6 @@ a {
 title {
   display: flow;
   font-weight: 600;
-  margin: -72px 0 0 80px;
+  margin: -76px 0 0 80px;
   line-height: 1
 }
