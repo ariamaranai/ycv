@@ -9,7 +9,7 @@
 
   let continuationNewest;
   let continuationNext;
-  let isAutoLiked = 0;
+  let isAutoLiked = 1;
 
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
@@ -71,14 +71,13 @@
       }
 
       let observer = new IntersectionObserver(entries =>
-        newRoot.scrollTop &&
-        entries[0].intersectionRect.height == newRoot.offsetHeight &&
-          fetchNext(continuationNext, 0, 0),
+        newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && fetchNext(continuationNext, 0, 0),
         { rootMargin: "16776399px 0px 80px", threshold: 1 }
       );
-      isAutoLiked || observer.observe(newRoot);
+      observer.observe(newRoot);
 
-      let timer;
+      let t = 0;
+      let delay = 0;
       let fetchNext = async (continuation, isFirst, isReply) => {
         let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
           body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
@@ -90,7 +89,8 @@
         let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[
           isFirst
             ? "reloadContinuationItemsCommand"
-            : "appendContinuationItemsAction"];
+            : "appendContinuationItemsAction"
+          ];
         let i = isFirst;
 
         do {
@@ -102,21 +102,19 @@
           let { likeCountLiked } = toolbar;
           let likedBlock = commentBlockNodes[4];
           commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url.slice(6, -24) + "40-c";
-          commentBlockNodes[1].data = commentEntityPayload.author.displayName + " ";
+          commentBlockNodes[1].data = commentEntityPayload.author.displayName + "  ";
           commentBlockNodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
           commentBlockNodes[3].data = "\n" + properties.content.content;
 
           if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
             let { action } = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint;
             if (isAutoLiked) {
-              try {
-                fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"actions":["' + action + '"],"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}}}',
-                  headers,
-                  method: "POST",
-                  activateAfter: i * 127
-                });
-              } catch (e) {}
+              fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
+                headers,
+                method: "POST",
+                activateAfter: delay = (t - (t = performance.now())) > -500 ? delay + 500 : 0
+              });
               likedBlock.textContent = "❤️ " + likeCountLiked;
             } else {
               likedBlock.nonce = action;
@@ -124,7 +122,9 @@
             }
           } else
             likedBlock.textContent = "❤️ " + likeCountLiked;
+
           newRoot.appendChild(commentBlock);
+
           if (!isReply) {
             if (mutations[i].payload.commentEntityPayload.toolbar.replyCount) {
               await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
@@ -137,9 +137,9 @@
           let { continuationItemRenderer } = continuationItems.at(-1);
           if (continuationItemRenderer) {
             continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token;
-            isFirst && isAutoLiked && fetchNext(continuationNext, 0, 0);
+            // await fetchNext(continuationNext, 0, 0);
           } else
-            return observer.disconnect(clearInterval(timer));
+            return observer.disconnect();
         }
       }
 
@@ -150,7 +150,7 @@
           let { nonce } = target;
           if (nonce) {
             fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-              body: '{"actions":["' + nonce + '"],"context":{"client":{"clientName":1,"clientVersion":"1.2025011"}}}',
+              body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
               headers,
               method: "POST"
             });
