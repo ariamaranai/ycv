@@ -86,11 +86,7 @@
         })).json();
 
         let { mutations } = r.frameworkUpdates.entityBatchUpdate;
-        let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[
-          isFirst
-            ? "reloadContinuationItemsCommand"
-            : "appendContinuationItemsAction"
-          ];
+        let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isFirst ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
         let i = isFirst;
 
         do {
@@ -101,7 +97,7 @@
           let { publishedTime } = properties;
           let { likeCountLiked } = toolbar;
           let likedBlock = commentBlockNodes[4];
-          commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url.slice(6, -24) + "40-c";
+          commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
           commentBlockNodes[1].data = commentEntityPayload.author.displayName + "  ";
           commentBlockNodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
           commentBlockNodes[3].data = "\n" + properties.content.content;
@@ -113,7 +109,7 @@
                 body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
                 headers,
                 method: "POST",
-                activateAfter: delay = (t - (t = performance.now())) > -500 ? delay + 500 : 0
+                activateAfter: delay = (t - (t = performance.now())) > -127 ? delay + 127 : 0
               });
               likedBlock.textContent = "❤️ " + likeCountLiked;
             } else {
