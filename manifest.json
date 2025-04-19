@@ -13,6 +13,8 @@
     "contextMenus",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
+    "storage",
+    "system.display",
     "userScripts"
   ],
   "host_permissions": [

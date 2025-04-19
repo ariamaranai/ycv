@@ -1,6 +1,6 @@
 :root {
   width: 412px;
-  margin: -48px auto 0;
+  margin: -24px auto 8px;
   padding-left: 56px;
   background-color: #111;
   font-size: 14px;
@@ -8,17 +8,21 @@
   color: #ddd;
   line-height: 24px;
   tab-size: 80px;
-  tab-size: 80px;
   white-space: pre-wrap;
   word-break: break-all;
   overflow-y: scroll
 }
 .r {
-  margin-left: 48px;
+  display: flow;
+  margin-left: 48px
+}
+i {
+  display: contents;
+  font-style: unset
 }
 img {
   display: flow;
-  margin: 72px 0 -40px -48px;
+  margin: 24px 0 -40px -48px;
   width: 40px;
   border-radius: 20px;
   cursor: pointer;
@@ -29,27 +33,21 @@ s {
   font-size: 12px;
   color: #bbb
 }
-i {
-  display: flow;
+u {
+  display: contents;
   contain: size;
-  font-style: unset;
   font-size: 15px;
   line-height: 32px;
-  white-space: pre;
   user-select: none;
   cursor: pointer;
 }
 a {
-  display: flow;
-  width: fit-content;
+  display: contents;
   font-size: 12px;
-  margin-left: 80px;
-  color: #ddd;
-  text-decoration: unset
+  color: #ddd
 }
 title {
   display: flow;
-  font-weight: 600;
-  margin: -76px 0 0 80px;
-  line-height: 1
+  margin-left: 80px;
+  font-weight: 600
 }

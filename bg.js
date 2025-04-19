@@ -24,15 +24,30 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => (
 chrome.action.onClicked.addListener(() => {
   
 });
-chrome.contextMenus.onClicked.addListener(() => {
 
-});
+chrome.contextMenus.onClicked.addListener((a, b) =>
+  chrome.system.display.getInfo((infos => {
+    let url = a?.linkUrl || a?.frameUrl || b.url;
+    let { workArea } = infos[0];
+    chrome.windows.create({
+      url:
+        "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
+        url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
+        "/",
+      type: "popup",
+      width: 500,
+      height: workArea.height,
+      left: workArea.width - 500,
+      top: 0
+    })
+  }))
+);
 
 chrome.runtime.onInstalled.addListener(() => (
   chrome.contextMenus.create({
-    id: "",
+    id: "0",
     title: "View comments",
-    contexts: ["page"],
+    contexts: ["page", "video"],
     documentUrlPatterns: [
       "https://www.youtube.com/watch?v=*",
       "https://www.youtube.com/embed/*",
@@ -40,9 +55,9 @@ chrome.runtime.onInstalled.addListener(() => (
     ]
   }),
   chrome.contextMenus.create({
-    id: "0",
+    id: "1",
     title: "View comments",
-    contexts: ["video", "frame", "link"],
+    contexts: ["frame", "video", "link"],
     targetUrlPatterns: [
       "https://www.youtube.com/watch?v=*",
       "https://www.youtube.com/embed/*",

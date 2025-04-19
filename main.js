@@ -4,8 +4,8 @@
   let newRoot = d.createElement("body");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
 
-  let _commentBlock = d.createElement("dt");
-  _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("i"));
+  let _commentBlock = d.createElement("i");
+  _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("u"));
 
   let continuationNewest;
   let continuationNext;
@@ -18,15 +18,15 @@
     let p = code.indexOf('viewCount', 3000) + 65;
 
     newRoot.innerHTML =
-      "<img style=width:120px;border-radius:0 src=//i.ytimg.com/vi/" +
+      "<img style=width:120px;margin-bottom:-80px;border-radius:0 src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
       "/hqdefault.jpg><title>" +
       e[1].content +
       "</title><a target=_blank href=" +
       (e = e[6]).firstChild.href +
-      ">" +
+      ">\t" +
       e.lastChild.getAttribute("content") +
-      "</a>\t⚡ " +
+      "</a>\n\t⚡ " +
       code.slice(p, p = code.indexOf(" ", p)).replaceAll(".", ",") +
       "　❤️ " +
       ((code[p = code.indexOf("yText", p + 1300) + 8] == "I")
@@ -100,7 +100,7 @@
           commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
           commentBlockNodes[1].data = commentEntityPayload.author.displayName + "  ";
           commentBlockNodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-          commentBlockNodes[3].data = "\n" + properties.content.content;
+          commentBlockNodes[3].data = "\n" + properties.content.content + "\n";
 
           if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
             let { action } = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint;
@@ -111,7 +111,7 @@
                 method: "POST",
                 activateAfter: delay = (t - (t = performance.now())) > -127 ? delay + 127 : 0
               });
-              likedBlock.textContent = "❤️ " + likeCountLiked;
+              likedBlock.textContent = "💖 " + likeCountLiked;
             } else {
               likedBlock.nonce = action;
               likedBlock.textContent = likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍";
@@ -133,7 +133,6 @@
           let { continuationItemRenderer } = continuationItems.at(-1);
           if (continuationItemRenderer) {
             continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token;
-            // await fetchNext(continuationNext, 0, 0);
           } else
             return observer.disconnect();
         }
