@@ -11,27 +11,7 @@
   let continuationNext;
 
   let isAutoLikes;
-  chrome.runtime.onMessage.addListener(m => {
-    if (isAutoLikes = m) {
-      let targets = d.getElementsByTagName("u");
-      let i = 0;
-      while (i < targets.length) {
-        let target = targets[i];
-        let { nonce } = target;
-        if (nonce) {
-          fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-            body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
-            headers,
-            method: "POST"
-          });
-          target.textContent = "🧡 " + (+target.textContent.slice(2) + 1);
-          target.nonce = "";
-        }
-        ++i;
-      }
-    }
-  });
-  chrome.runtime.sendMessage(0, m => isAutoLikes = m);
+  chrome.runtime.sendMessage(9, m => isAutoLikes = m);
 
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
@@ -61,7 +41,9 @@
           ? e.replaceAll(".", ",")
           : e[0] + "," + e.slice(1)
         : "-"
-      );
+      ) +
+      "<rt " +
+      (isAutoLikes ? "class=e>💞</rt>" : ">💞</rt>");
 
     continuationNewest = code.substr(code.indexOf("Eg0SC", p + 700), 100);
 
@@ -182,6 +164,32 @@
             open("?v=" + src.slice(23, 34));
           } else {
       
+          }
+        } else if (tagName == "RT") {
+          if (target.className) {
+            chrome.runtime.sendMessage(isAutoLikes = 0);
+            target.className = "";
+          } else {
+            chrome.runtime.sendMessage(isAutoLikes = 1);
+            target.className = "e";
+            let targets = newRoot.getElementsByTagName("u");
+            let i = 0;
+
+            while (i < targets.length) {
+              let target = targets[i];
+              let { nonce } = target;
+              if (nonce) {
+                fetchLater ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
+                  headers,
+                  method: "POST",
+                  activateAfter: delay = (t - (t = performance.now())) > -127 ? delay + 127 : 0
+                });
+                target.textContent = "🧡 " + (+target.textContent.slice(2) + 1);
+                target.nonce = "";
+              }
+              ++i;
+            }
           }
         }
       }
