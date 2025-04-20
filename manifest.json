@@ -11,6 +11,7 @@
     "browsingData",
     "contentSettings",
     "contextMenus",
+    "cookies",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
     "storage",

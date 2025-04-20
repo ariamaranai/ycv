@@ -13,39 +13,76 @@ chrome.alarms.onAlarm.addListener(() => (
   })
 ));
 
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => (
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info => {
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "block"
-  }),
+  });
   chrome.alarms.create({ delayInMinutes: .05 })
-));
-
-chrome.action.onClicked.addListener(() => {
-  
 });
 
-chrome.contextMenus.onClicked.addListener((a, b) =>
+chrome.runtime.onUserScriptMessage.addListener((_, s, r) => (
+  chrome.storage.local.get("0", v => r(v[0].includes(s.tab.url.slice(-11)))),
+  !0
+));
+
+chrome.contextMenus.onClicked.addListener((a, b) => (
   chrome.system.display.getInfo((infos => {
-    let url = a?.linkUrl || a?.frameUrl || b.url;
-    let { workArea } = infos[0];
-    chrome.windows.create({
-      url:
-        "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
-        url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
-        "/",
-      type: "popup",
-      width: 500,
-      height: workArea.height,
-      left: workArea.width - 500,
-      top: 0
-    })
+    let { menuItemId } = a;
+    if (menuItemId < "2")
+      chrome.storage.local.get("0", v => {
+        let videoIds = v[0];
+        let targetVideoId = a.pageUrl.slice(-11);
+        let index = videoIds.indexOf(targetVideoId);
+          index < 0
+            ? menuItemId && (
+              videoIds.push(targetVideoId),
+              chrome.storage.local.set("0", videoIds),
+              chrome.runtime.sendMessage(1)
+            )
+            : menuItemId || (
+              videoIds.splice(index, 1),
+              chrome.storage.local.set("0", videoIds),
+              chrome.runtime.sendMessage(0)
+            );
+      })
+    else {
+      let url = a.linkUrl || a.frameUrl || b.url;
+      let { workArea } = infos[0];
+      chrome.windows.create({
+        url:
+          "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
+          url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
+          "/",
+        type: "popup",
+        width: 500,
+        height: workArea.height,
+        left: workArea.width - 500,
+        top: 0
+      })
+    }
   }))
-);
+));
 
 chrome.runtime.onInstalled.addListener(() => (
   chrome.contextMenus.create({
-    id: "0",
+    id: "",
+    title: "Register auto-likes",
+    type: "radio",
+    documentUrlPatterns: [
+      "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"
+    ]
+  }),
+  chrome.contextMenus.create({
+    id: "1",
+    title: "Unregister auto-likes",
+    type: "radio",
+    documentUrlPatterns: [
+      "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"
+    ]
+  }),
+  chrome.contextMenus.create({
+    id: "2",
     title: "View comments",
     contexts: ["page", "video"],
     documentUrlPatterns: [
@@ -55,7 +92,7 @@ chrome.runtime.onInstalled.addListener(() => (
     ]
   }),
   chrome.contextMenus.create({
-    id: "1",
+    id: "3",
     title: "View comments",
     contexts: ["frame", "video", "link"],
     targetUrlPatterns: [
@@ -65,6 +102,7 @@ chrome.runtime.onInstalled.addListener(() => (
       "https://youtu.be/*"
     ]
   }),
+  chrome.storage.local.set({ "0": [] }),
   chrome.userScripts.configureWorld({
     messaging: !0
   }),

@@ -9,7 +9,29 @@
 
   let continuationNewest;
   let continuationNext;
-  let isAutoLiked = 1;
+
+  let isAutoLikes;
+  chrome.runtime.onMessage.addListener(m => {
+    if (isAutoLikes = m) {
+      let targets = d.getElementsByTagName("u");
+      let i = 0;
+      while (i < targets.length) {
+        let target = targets[i];
+        let { nonce } = target;
+        if (nonce) {
+          fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+            body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
+            headers,
+            method: "POST"
+          });
+          target.textContent = "🧡 " + (+target.textContent.slice(2) + 1);
+          target.nonce = "";
+        }
+        ++i;
+      }
+    }
+  });
+  chrome.runtime.sendMessage(0, m => isAutoLikes = m);
 
   d.addEventListener("DOMContentLoaded", async () => {
     let bodyChilds = oldRoot.lastChild.childNodes;
@@ -18,13 +40,13 @@
     let p = code.indexOf('viewCount', 3000) + 65;
 
     newRoot.innerHTML =
-      "<img style=width:120px;margin-bottom:-80px;border-radius:0 src=//i.ytimg.com/vi/" +
+      "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
-      "/hqdefault.jpg><title>" +
+      "/hqdefault.jpg style=width:120px;margin-bottom:-76px;border-radius:0><title>" +
       e[1].content +
-      "</title><a target=_blank href=" +
-      (e = e[6]).firstChild.href +
-      ">\t" +
+      "</title><a href=/@" +
+      (e = e[6]).firstChild.href.slice(24) +
+      " target=_blank>\t" +
       e.lastChild.getAttribute("content") +
       "</a>\n\t⚡ " +
       code.slice(p, p = code.indexOf(" ", p)).replaceAll(".", ",") +
@@ -33,7 +55,8 @@
         ? code.slice(p += 23, code.indexOf(" ", p)).replaceAll(".", ",")
         : "-") +
       "　💬 " +
-      (e = (p = code.indexOf("contextualInfo", 300000)) > 0
+      (
+        e = (p = code.indexOf("contextualInfo", 300000)) > 0
         ? (e = code.slice(p += 34, p = code.indexOf('"', p))).length != 4
           ? e.replaceAll(".", ",")
           : e[0] + "," + e.slice(1)
@@ -78,6 +101,7 @@
 
       let t = 0;
       let delay = 0;
+
       let fetchNext = async (continuation, isFirst, isReply) => {
         let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
           body: '{"context":{"client":{"hl":"en","clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
@@ -104,14 +128,14 @@
 
           if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
             let { action } = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint;
-            if (isAutoLiked) {
+            if (isAutoLikes) {
               fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
                 body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
                 headers,
                 method: "POST",
                 activateAfter: delay = (t - (t = performance.now())) > -127 ? delay + 127 : 0
               });
-              likedBlock.textContent = "💖 " + likeCountLiked;
+              likedBlock.textContent = "🧡 " + likeCountLiked;
             } else {
               likedBlock.nonce = action;
               likedBlock.textContent = likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍";
@@ -141,7 +165,7 @@
       onclick = e => {
         let { target } = e;
         let { tagName } = target;
-        if (tagName == "I") {
+        if (tagName == "U") {
           let { nonce } = target;
           if (nonce) {
             fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
