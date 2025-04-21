@@ -42,7 +42,7 @@ u {
   font-size: 15px;
   line-height: 32px;
   user-select: none;
-  cursor: pointer;
+  cursor: pointer
 }
 a {
   display: contents;

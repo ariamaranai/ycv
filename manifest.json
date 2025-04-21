@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ycv",
   "version": "0",
-  "description": "Youtube comments viewer",
+  "description": "View youtube comments and auto-like",
   "icons": {
     "128": "128.png"
   },

@@ -3,23 +3,27 @@ chrome.contentSettings.javascript.set({
   setting: "allow"
 });
 chrome.browsingData.removeServiceWorkers({
-  origins: ["https://www.youtube.com"]
+  origins: ["https://www.youtube.com/"]
 });
 
-chrome.alarms.onAlarm.addListener(() => (
+chrome.alarms.onAlarm.addListener(() =>
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "allow"
   })
-));
+);
 
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => {
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "block"
-  });
-  chrome.alarms.create({ delayInMinutes: .05 })
-});
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(info =>
+  info.rule.ruleId == 1 && (
+    chrome.contentSettings.javascript.set({
+      primaryPattern: "https://www.youtube.com/*",
+      setting: "block"
+    }),
+    chrome.alarms.create({
+      delayInMinutes: .05
+    })
+  )
+);
 
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
@@ -32,7 +36,9 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
       index < 0
         ? m && videoIds.push(targetVideoId)
         : m || videoIds.splice(index, 1);
-      chrome.storage.local.set({ "0": videoIds });
+      chrome.storage.local.set({
+        "0": videoIds
+      });
     }
   });
   return !0
@@ -78,7 +84,9 @@ chrome.runtime.onInstalled.addListener(() => (
       "https://youtu.be/*"
     ]
   }),
-  chrome.storage.local.set({ "0": [] }),
+  chrome.storage.local.set({
+    "0": []
+  }),
   chrome.userScripts.configureWorld({
     messaging: !0
   }),
