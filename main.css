@@ -27,6 +27,7 @@ img {
   display: flow;
   margin: 24px 0 -40px -48px;
   width: 40px;
+  height: 40px;
   border-radius: 20px;
   cursor: pointer;
   user-select: none

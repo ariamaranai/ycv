@@ -19,7 +19,7 @@
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
-      "/hqdefault.jpg style=width:120px;margin-bottom:-76px;border-radius:0><title>" +
+      "/hqdefault.jpg style=width:120px;height:90px;margin-bottom:-76px;border-radius:0><title>" +
       e[1].content +
       "</title><a href=" +
       (e = e[6]).firstChild.href +
@@ -88,24 +88,24 @@
 
       do {
         let commentBlock = _commentBlock.cloneNode(1);
-        let commentBlockNodes = commentBlock.childNodes;
+        let nodes = commentBlock.childNodes;
         let { commentEntityPayload } = mutations[i].payload;
         let { properties, toolbar } = commentEntityPayload;
         let { publishedTime } = properties;
         let { likeCountLiked } = toolbar;
-        let likeBlock = commentBlockNodes[4];
+        let likeBlock = nodes[4];
         
-        commentBlockNodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
-        commentBlockNodes[1].data = commentEntityPayload.author.displayName + "  ";
-        commentBlockNodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-        commentBlockNodes[3].data = "\n" + properties.content.content + "\n";
+        nodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
+        nodes[1].data = commentEntityPayload.author.displayName + "  ";
+        nodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
+        nodes[3].data = "\n" + properties.content.content + "\n";
 
         likeBlock.textContent =
           mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
-            ? isAutoLike
+            ? (nodes = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
               ? (
                 fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
                   headers,
                   method: "POST",
                   activateAfter: delay = (n - (n = performance.now())) > -127 ? delay + 127 : 0
@@ -113,7 +113,7 @@
                 "🧡 " + likeCountLiked
               )
               : (
-                likeBlock.nonce = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action,
+                likeBlock.nonce = nodes,
                 likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
               )
             : "❤️ " + likeCountLiked;
