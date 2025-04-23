@@ -6,18 +6,19 @@
   let continuationNewest;
   let continuationNext;
   let isReceived = 0;
-  
+
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
-  
+
   let _commentBlock = d.createElement("i");
   _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("u"));
-  
+
   let n = 0;
   let delay = 0;
   let commentFragment = new DocumentFragment;
   let refCommentId;
   let firstCommentId;
+
   let fetchNext = async (continuation, isNewest, isReply) => {
     let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
       body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
@@ -35,7 +36,7 @@
         : observer.disconnect();
     }
     isReceived = 1;
-  
+
     do {
       let { commentEntityPayload } = mutations[i].payload;
       let { properties, toolbar } = commentEntityPayload;
@@ -77,15 +78,11 @@
               likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
             )
           : "❤️ " + likeCountLiked;
-      
 
       isReply
         ? commentBlock.className = "r"
-        : mutations[i].payload.commentEntityPayload.toolbar.replyCount && fetchNext(
-            continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token,
-            0,
-            1
-          );
+        : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
+          fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
     } while ((i += 5) < mutations.length);
 
     if (isNewest) {
@@ -93,7 +90,7 @@
       newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling);
     }
   }
-  
+
   let observer = new IntersectionObserver(entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && (
       fetchNext(continuationNext, isReceived = 0, 0)
@@ -135,7 +132,7 @@
     if (e == "-") return;
 
     continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
-  
+
     t = new Uint8Array(
       await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
         (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION_ID", 450000) + 18, 21) +
@@ -178,10 +175,7 @@
       target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
       target.nonce = "";
    } else if (tagName == "IMG") 
-      open(newRoot.firstChild == target
-        ? "?v=" + target.src.slice(23, 34)
-        : "/" + target.nextSibling.data
-      );
+      open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
       let registerFlag = target.className = target.className ? "" : "e";
       chrome.runtime.sendMessage(registerFlag);

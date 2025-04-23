@@ -2,14 +2,12 @@ chrome.contentSettings.javascript.set({
   primaryPattern: "https://www.youtube.com/*",
   setting: "allow"
 });
-
 chrome.alarms.onAlarm.addListener(() =>
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "allow"
   })
 );
-
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
@@ -19,7 +17,6 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
     delayInMinutes: .05
   })
 ));
-
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
@@ -38,7 +35,6 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   });
   return !0
 });
-
 chrome.contextMenus.onClicked.addListener((a, b) => (
   chrome.system.display.getInfo((infos => {
     let url = a.linkUrl || a.frameUrl || b.url;
@@ -56,7 +52,6 @@ chrome.contextMenus.onClicked.addListener((a, b) => (
     })
   }))
 ));
-
 chrome.runtime.onInstalled.addListener(() => (
   chrome.contextMenus.create({
     id: "",
