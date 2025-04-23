@@ -5,18 +5,19 @@
   let headers;
   let continuationNewest;
   let continuationNext;
+  let isReceived = 0;
   
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
   
   let _commentBlock = d.createElement("i");
   _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("u"));
-
+  
   let n = 0;
   let delay = 0;
-  let firstCommentBlock = null;
+  let commentFragment = new DocumentFragment;
+  let refCommentId;
   let firstCommentId;
-
   let fetchNext = async (continuation, isNewest, isReply) => {
     let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
       body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
@@ -27,15 +28,33 @@
     let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
     let i = isNewest;
 
+    if (!isReply) {
+      let { continuationItemRenderer } = continuationItems.at(-1);
+      continuationItemRenderer
+        ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
+        : observer.disconnect();
+    }
+    isReceived = 1;
+  
     do {
-      let commentBlock = _commentBlock.cloneNode(1);
-      let nodes = commentBlock.childNodes;
       let { commentEntityPayload } = mutations[i].payload;
       let { properties, toolbar } = commentEntityPayload;
       let { publishedTime } = properties;
+      let commentBlock = _commentBlock.cloneNode(1);
+
+      if (isNewest) {
+        let { commentId } = properties;
+        if (commentId == refCommentId)
+          break;
+        i < 2 && (firstCommentId = commentId);
+        commentFragment.appendChild(commentBlock);
+      } else
+        newRoot.appendChild(commentBlock);
+
       let { likeCountLiked } = toolbar;
+      let nodes = commentBlock.childNodes;
       let likeBlock = nodes[4];
-      
+
       nodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
       nodes[1].data = commentEntityPayload.author.displayName + "  ";
       nodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
@@ -58,11 +77,7 @@
               likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
             )
           : "❤️ " + likeCountLiked;
-
-      if (firstCommentBlock) {
-
-      }
-      newRoot.insertBefore(commentBlock, firstCommentBlock);
+      
 
       isReply
         ? commentBlock.className = "r"
@@ -73,17 +88,16 @@
           );
     } while ((i += 5) < mutations.length);
 
-    if (!isReply) {
-      let { continuationItemRenderer } = continuationItems.at(-1);
-      continuationItemRenderer
-        ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
-        : observer.disconnect();
+    if (isNewest) {
+      refCommentId = firstCommentId;
+      newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling);
     }
   }
   
   let observer = new IntersectionObserver(entries =>
-    newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
-    fetchNext(continuationNext, 0, 0),
+    isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && (
+      fetchNext(continuationNext, isReceived = 0, 0)
+    ),
     { rootMargin: "16776399px 0px 80px", threshold: 1 }
   );
 
@@ -140,18 +154,15 @@
       authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
       "content-type": ""
     };
-    
+
     fetchNext(continuationNewest, 1, 0);
     observer.observe(newRoot);
-  });
+  }, { once: !0 });
 
   onkeydown = e => e.keyCode != 116 || (
     e.preventDefault(),
-    firstCommentBlock= newRoot.childNodes[5],
     newRoot.scrollTop = 0,
-    fetchNext (continuationNewest, 1, 0).then(() =>
-      firstCommentBlock = null
-    )
+    fetchNext (continuationNewest, 1, 0)
   );
 
   onclick = e => {
