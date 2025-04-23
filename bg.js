@@ -35,23 +35,34 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   });
   return !0
 });
-chrome.contextMenus.onClicked.addListener((a, b) => (
-  chrome.system.display.getInfo((infos => {
-    let url = a.linkUrl || a.frameUrl || b.url;
-    let { workArea } = infos[0];
-    chrome.windows.create({
-      url:
+chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
+  chrome.system.display.getInfo((infos =>
+    chrome.windows.get(windowId, window => {
+      let { workArea } = infos[0];
+      let workAreaWidth = workArea.width;
+      let maxWindowWidth = workAreaWidth - 500;
+      let windowWidth = window.width;
+      let url = a.linkUrl || a.frameUrl || windowUrl;
+      chrome.windows.create({
+        width: 500,
+        height: workArea.height,
+        left: maxWindowWidth,
+        top: 0,
+        url:
         "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
         url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
         "/",
-      type: "popup",
-      width: 500,
-      height: workArea.height,
-      left: workArea.width - 500,
-      top: 0
+        type: "popup"
+      });
+      chrome.windows.update(windowId, {
+        width: maxWindowWidth < windowWidth ? maxWindowWidth : windowWidth,
+        left: 0,
+        top: 0,
+        state: "normal"
+      });
     })
-  }))
-));
+  ))
+);
 chrome.runtime.onInstalled.addListener(() => (
   chrome.contextMenus.create({
     id: "",
