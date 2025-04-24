@@ -16,7 +16,7 @@
   let n = 0;
   let delay = 0;
   let commentFragment = new DocumentFragment;
-  let refCommentId;
+  let endCommentId;
   let firstCommentId;
 
   let fetchNext = async (continuation, isNewest, isReply) => {
@@ -45,7 +45,7 @@
 
       if (isNewest) {
         let { commentId } = properties;
-        if (commentId == refCommentId)
+        if (commentId == endCommentId)
           break;
         i < 2 && (firstCommentId = commentId);
         commentFragment.appendChild(commentBlock);
@@ -86,7 +86,7 @@
     } while ((i += 5) < mutations.length);
 
     if (isNewest) {
-      refCommentId = firstCommentId;
+      endCommentId = firstCommentId;
       newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling);
     }
   }
@@ -171,16 +171,14 @@
         body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
         headers,
         method: "POST"
-      }),
+      });
       target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
       target.nonce = "";
-   } else if (tagName == "IMG") 
+   } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
-      let registerFlag = target.className = target.className ? "" : "e";
-      chrome.runtime.sendMessage(registerFlag);
-
-      if (registerFlag) {
+      chrome.runtime.sendMessage(isAutoLike = !!(target.className = target.className ? "" : "e"));
+      if (isAutoLike) {
         let targets = newRoot.getElementsByTagName("u");
         let i = 0;
         while (i < targets.length) {

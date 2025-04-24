@@ -21,7 +21,7 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
     let targetVideoId = s.tab.url.slice(-11);
-    if (v == 0)
+    if (m === 0)
       r(videoIds.includes(targetVideoId))
     else {
       let index = videoIds.indexOf(targetVideoId);
