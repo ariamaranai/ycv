@@ -37,7 +37,7 @@
     }
     isReceived = 1;
 
-    do {
+    while (i < mutations.length) {
       let { commentEntityPayload } = mutations[i].payload;
       let { properties, toolbar } = commentEntityPayload;
       let { publishedTime } = properties;
@@ -71,7 +71,7 @@
                 method: "POST",
                 activateAfter: delay = (n - (n = performance.now())) > -127 ? delay + 127 : 0
               }),
-              "🧡 " + likeCountLiked
+              "💛 " + likeCountLiked
             )
             : (
               likeBlock.nonce = nodes,
@@ -83,8 +83,8 @@
         ? commentBlock.className = "r"
         : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
           fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
-    } while ((i += 5) < mutations.length);
-
+      i += 5;
+    }
     if (isNewest) {
       endCommentId = firstCommentId;
       newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling);
@@ -94,9 +94,7 @@
   let observer = new IntersectionObserver(entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && (
       fetchNext(continuationNext, isReceived = 0, 0)
-    ),
-    { rootMargin: "16776399px 0px 80px", threshold: 1 }
-  );
+    ), { rootMargin: "16776399px 0px 80px", threshold: 1 });
 
   d.addEventListener("DOMContentLoaded", async () => {
     let n = oldRoot.lastChild.childNodes;
@@ -156,12 +154,9 @@
     observer.observe(newRoot);
   }, { once: !0 });
 
-  onkeydown = e => e.keyCode != 116 || (
-    e.preventDefault(),
-    newRoot.scrollTop = 0,
-    fetchNext (continuationNewest, 1, 0)
+  onkeydown = e => e.keyCode != 116 || e.preventDefault(
+    fetchNext (continuationNewest, 1, newRoot.scrollTop = 0)
   );
-
   onclick = e => {
     let { target } = e;
     let { tagName } = target;
@@ -177,7 +172,7 @@
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
-      chrome.runtime.sendMessage(isAutoLike = !!(target.className = target.className ? "" : "e"));
+      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "e");
       if (isAutoLike) {
         let targets = newRoot.getElementsByTagName("u");
         let i = 0;
@@ -191,7 +186,7 @@
               method: "POST",
               activateAfter: delay = (n - (n = performance.now())) > -127 ? delay + 127 : 0
             });
-            target.textContent = "🧡 " + (+target.textContent.slice(2) + 1);
+            target.textContent = "💛 " + (+target.textContent.slice(2) + 1);
             target.nonce = "";
           }
           ++i;
