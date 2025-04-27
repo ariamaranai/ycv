@@ -42,6 +42,7 @@
       let { properties, toolbar } = commentEntityPayload;
       let { publishedTime } = properties;
       let commentBlock = _commentBlock.cloneNode(1);
+      
 
       if (isNewest) {
         let { commentId } = properties;
@@ -69,7 +70,7 @@
                 body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
                 headers,
                 method: "POST",
-                activateAfter: delay = (n - (n = performance.now())) > -127 ? delay + 127 : 0
+                activateAfter: delay = (n - (n = performance.now())) > -250 ? delay + 250 : 0
               }),
               "💛 " + likeCountLiked
             )
@@ -85,10 +86,10 @@
           fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
       i += 5;
     }
-    if (isNewest) {
-      endCommentId = firstCommentId;
-      newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling);
-    }
+    isNewest && (
+      endCommentId = firstCommentId,
+      newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling)
+    )
   }
 
   let observer = new IntersectionObserver(entries =>
@@ -149,7 +150,6 @@
       authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
       "content-type": ""
     };
-
     fetchNext(continuationNewest, 1, 0);
     observer.observe(newRoot);
   }, { once: !0 });
@@ -179,16 +179,16 @@
         while (i < targets.length) {
           let target = targets[i];
           let { nonce } = target;
-          if (nonce) {
-            fetchLater ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+          nonce && (
+            nonce = fetchLater ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
               body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
               headers,
               method: "POST",
-              activateAfter: delay = (n - (n = performance.now())) > -127 ? delay + 127 : 0
-            });
-            target.textContent = "💛 " + (+target.textContent.slice(2) + 1);
-            target.nonce = "";
-          }
+              activateAfter: delay = (n - (n = performance.now())) > -250 ? delay + 250 : 0
+            }),
+            target.textContent = "💛 " + (+target.textContent.slice(2) + 1),
+            target.nonce = ""
+          )
           ++i;
         }
       }
