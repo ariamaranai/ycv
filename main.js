@@ -13,8 +13,6 @@
   let _commentBlock = d.createElement("i");
   _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("u"));
 
-  let n = 0;
-  let delay = 0;
   let commentFragment = new DocumentFragment;
   let endCommentId;
   let firstCommentId;
@@ -42,7 +40,6 @@
       let { properties, toolbar } = commentEntityPayload;
       let { publishedTime } = properties;
       let commentBlock = _commentBlock.cloneNode(1);
-      
 
       if (isNewest) {
         let { commentId } = properties;
@@ -66,11 +63,10 @@
         mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
           ? (nodes = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
             ? (
-              fetchLater("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+              fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
                 body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
                 headers,
-                method: "POST",
-                activateAfter: delay = (n - (n = performance.now())) > -250 ? delay + 250 : 0
+                method: "POST"
               }),
               "💛 " + likeCountLiked
             )
@@ -83,18 +79,18 @@
       isReply
         ? commentBlock.className = "r"
         : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
-          fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
+          await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
       i += 5;
     }
     isNewest && (
       endCommentId = firstCommentId,
       newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling)
-    )
+    );
   }
 
-  let observer = new IntersectionObserver(entries =>
+  let observer = new IntersectionObserver(async entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && (
-      fetchNext(continuationNext, isReceived = 0, 0)
+      await fetchNext(continuationNext, isReceived = 0, 0)
     ), { rootMargin: "16776399px 0px 80px", threshold: 1 });
 
   d.addEventListener("DOMContentLoaded", async () => {
@@ -150,12 +146,12 @@
       authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
       "content-type": ""
     };
-    fetchNext(continuationNewest, 1, 0);
+    await fetchNext(continuationNewest, 1, 0);
     observer.observe(newRoot);
   }, { once: !0 });
 
-  onkeydown = e => e.keyCode != 116 || e.preventDefault(
-    fetchNext (continuationNewest, 1, newRoot.scrollTop = 0)
+  onkeydown = async e => e.keyCode != 116 || e.preventDefault(
+    await fetchNext (continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
     let { target } = e;
@@ -180,11 +176,10 @@
           let target = targets[i];
           let { nonce } = target;
           nonce && (
-            nonce = fetchLater ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+            fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
               body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
               headers,
-              method: "POST",
-              activateAfter: delay = (n - (n = performance.now())) > -250 ? delay + 250 : 0
+              method: "POST"
             }),
             target.textContent = "💛 " + (+target.textContent.slice(2) + 1),
             target.nonce = ""
