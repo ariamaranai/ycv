@@ -29,7 +29,7 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
         ? m && videoIds.push(targetVideoId)
         : m || videoIds.splice(index, 1);
       chrome.storage.local.set({
-        "0": videoIds
+        0: videoIds
       });
     }
   });
@@ -86,7 +86,7 @@ chrome.runtime.onInstalled.addListener(() => (
     ]
   }),
   chrome.storage.local.set({
-    "0": []
+    0: []
   }),
   chrome.userScripts.configureWorld({
     messaging: !0
