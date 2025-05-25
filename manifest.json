@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "ycv",
   "version": "0",
-  "description": "View youtube comments and auto-like",
+  "description": "Youtube comments viewer",
   "icons": {
     "128": "128.png"
   },
@@ -33,5 +33,6 @@
     "css": ["main.css"],
     "matches": ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
     "run_at": "document_start"
-  }]
+  }],
+  "action": {}
 }
