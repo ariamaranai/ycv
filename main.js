@@ -89,9 +89,10 @@
   }
 
   let observer = new IntersectionObserver(async entries =>
-    isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight && (
-      await fetchNext(continuationNext, isReceived = 0, 0)
-    ), { rootMargin: "16776399px 0px 80px", threshold: 1 });
+    isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
+    await fetchNext(continuationNext, isReceived = 0, 0),
+    { rootMargin: "16776399px 0px 80px", threshold: 1 }
+  );
 
   d.addEventListener("DOMContentLoaded", async () => {
     let n = oldRoot.lastChild.childNodes;
