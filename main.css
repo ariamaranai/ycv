@@ -46,7 +46,7 @@ u {
   user-select: none;
   cursor: pointer
 }
-:any-link {
+a {
   display: contents;
   font-size: 12px;
   color: #ddd
