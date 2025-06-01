@@ -91,7 +91,7 @@
   let observer = new IntersectionObserver(async entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
     await fetchNext(continuationNext, isReceived = 0, 0),
-    { rootMargin: "16776399px 0px 80px", threshold: 1 }
+    { rootMargin: "16776300px 0px 0px", threshold: .98 }
   );
 
   d.addEventListener("DOMContentLoaded", async () => {
@@ -151,7 +151,8 @@
     observer.observe(newRoot);
   }, { once: !0 });
 
-  onkeydown = async e => e.keyCode != 116 || e.preventDefault(
+  onkeydown = async e => e.keyCode != 116 || (
+    e.preventDefault(),
     await fetchNext (continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
