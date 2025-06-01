@@ -91,7 +91,7 @@
   let observer = new IntersectionObserver(async entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
     await fetchNext(continuationNext, isReceived = 0, 0),
-    { rootMargin: "16776300px 0px 0px", threshold: .98 }
+    { rootMargin: "16776399px 0px 0px", threshold: 1 }
   );
 
   d.addEventListener("DOMContentLoaded", async () => {
