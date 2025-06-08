@@ -2,7 +2,6 @@
   let d = document;
   let newRoot = d.createElement("body");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
-  console.log(oldRoot.textContent);
 
   let headers;
   let continuationNewest;
@@ -19,80 +18,82 @@
   let endCommentId;
   let firstCommentId;
 
-  let fetchNext = async (continuation, isNewest, isReply) => {
-    let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
-      body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
-      headers,
-      method: "POST"
-    })).json();
-    let { mutations } = r.frameworkUpdates.entityBatchUpdate;
-    let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
-    let i = isNewest;
+  let fetchNext = async (continuation, isNewest, isReply) =>
+    new Promise(async resolve => {
+      let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+        body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
+        headers,
+        method: "POST"
+      })).json();
+      let { mutations } = r.frameworkUpdates.entityBatchUpdate;
+      let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
+      let i = isNewest;
 
-    if (!isReply) {
-      let { continuationItemRenderer } = continuationItems.at(-1);
-      continuationItemRenderer
-        ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
-        : observer.disconnect();
-    }
-    isReceived = 1;
+      if (!isReply) {
+        let { continuationItemRenderer } = continuationItems.at(-1);
+        continuationItemRenderer
+          ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
+          : observer.disconnect();
+      }
+      isReceived = 1;
 
-    while (i < mutations.length) {
-      let { commentEntityPayload } = mutations[i].payload;
-      let { properties, toolbar } = commentEntityPayload;
-      let { publishedTime } = properties;
-      let commentBlock = _commentBlock.cloneNode(1);
+      while (i < mutations.length) {
+        let { commentEntityPayload } = mutations[i].payload;
+        let { properties, toolbar } = commentEntityPayload;
+        let { publishedTime } = properties;
+        let commentBlock = _commentBlock.cloneNode(1);
   
-      if (isNewest) {
-        let { commentId } = properties;
-        if (commentId == endCommentId)
-          break;
-        i < 2 && (firstCommentId = commentId);
-        commentFragment.appendChild(commentBlock);
-      } else
-        newRoot.appendChild(commentBlock);
+        if (isNewest) {
+          let { commentId } = properties;
+          if (commentId == endCommentId)
+            break;
+          i < 2 && (firstCommentId = commentId);
+          commentFragment.appendChild(commentBlock);
+        } else
+          newRoot.appendChild(commentBlock);
 
-      let { likeCountLiked } = toolbar;
-      let nodes = commentBlock.childNodes;
-      let likeBlock = nodes[4];
+        let { likeCountLiked } = toolbar;
+        let nodes = commentBlock.childNodes;
+        let likeBlock = nodes[4];
 
-      nodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
-      nodes[1].data = commentEntityPayload.author.displayName + "  ";
-      nodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-      nodes[3].data = "\n" + properties.content.content + "\n";
+        nodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
+        nodes[1].data = commentEntityPayload.author.displayName + "  ";
+        nodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
+        nodes[3].data = "\n" + properties.content.content + "\n";
 
-      likeBlock.textContent =
-        mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
-          ? (nodes = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
-            ? (
-              fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
-                headers,
-                method: "POST"
-              }),
-              "💛 " + likeCountLiked
-            )
-            : (
-              likeBlock.nonce = nodes,
-              likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
-            )
-          : "❤️ " + likeCountLiked;
+        likeBlock.textContent =
+          mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
+            ? (nodes = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
+              ? (
+                fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
+                  headers,
+                  method: "POST"
+                }),
+                "💛 " + likeCountLiked
+              )
+              : (
+                likeBlock.nonce = nodes,
+                likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
+              )
+            : "❤️ " + likeCountLiked;
 
-      isReply
-        ? commentBlock.className = "r"
-        : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
-          await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
-      i += 5;
-    }
-    isNewest && (
-      endCommentId = firstCommentId,
-      newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling)
-    );
-  }
+        isReply
+          ? commentBlock.className = "r"
+          : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
+            await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
+        i += 5;
+      }
+      isNewest && (
+        endCommentId = firstCommentId,
+        newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling)
+      );
+      resolve();
+    });
 
   let observer = new IntersectionObserver(async entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
-    await fetchNext(continuationNext, isReceived = 0, 0),
+    fetchNext(continuationNext, isReceived = 0, 0),
     { rootMargin: "16776399px 0px 0px", threshold: 1 }
   );
 
@@ -149,13 +150,13 @@
       authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
       "content-type": ""
     };
-    await fetchNext(continuationNewest, 1, 0);
+    fetchNext(continuationNewest, 1, 0);
     observer.observe(newRoot);
   }, { once: !0 });
 
   onkeydown = async e => e.keyCode != 116 || (
     e.preventDefault(),
-    await fetchNext (continuationNewest, 1, newRoot.scrollTop = 0)
+    fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
     let { target } = e;
