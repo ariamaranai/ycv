@@ -45,8 +45,7 @@
   
         if (isNewest) {
           let { commentId } = properties;
-          if (commentId == endCommentId)
-            break;
+          if (commentId == endCommentId) break;
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
         } else
@@ -129,9 +128,7 @@
       (isAutoLike ? "<p class=e>💞" : "<p>💞");
 
     if (e == "-") return;
-
     continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
-
     t = new Uint8Array(
       await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
         (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION_ID", 450000) + 18, 21) +
