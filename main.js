@@ -2,6 +2,8 @@
   let d = document;
   let newRoot = d.createElement("body");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
+  console.log(oldRoot.textContent);
+
   let headers;
   let continuationNewest;
   let continuationNext;
@@ -40,7 +42,7 @@
       let { properties, toolbar } = commentEntityPayload;
       let { publishedTime } = properties;
       let commentBlock = _commentBlock.cloneNode(1);
-
+  
       if (isNewest) {
         let { commentId } = properties;
         if (commentId == endCommentId)
@@ -103,7 +105,7 @@
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
-      "/hqdefault.jpg style=width:120px;height:90px;margin-bottom:-76px;border-radius:0><title>" +
+      "/hqdefault.jpg style=position:relative;z-index:1;width:120px;height:90px;margin-bottom:-76px;border-radius:0><title>" +
       e[1].content +
       "</title><a href=" +
       (e = e[6]).firstChild.href +
