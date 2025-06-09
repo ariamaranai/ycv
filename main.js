@@ -100,7 +100,7 @@
     let n = oldRoot.lastChild.childNodes;
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
-    let p = t.indexOf('viewCount', 3000) + 65;
+    let p = t.indexOf('viewCoun', 3000) + 65;
 
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
@@ -114,12 +114,12 @@
       "</a>\n\t⚡ " +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
       "　❤️ " +
-      ((t[p = t.indexOf("yText", p + 1300) + 8] == "I")
+      ((t[p = t.indexOf("yTex", p + 1300) + 8] == "I")
         ? t.slice(p += 23, t.indexOf(" ", p)).replaceAll(".", ",")
         : "-") +
       "　💬 " +
       (
-        e = (p = t.indexOf("contextualInfo", 300000)) > 0
+        e = (p = t.indexOf("contextualIn", 300000)) > 0
           ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
             ? e.replaceAll(".", ",")
             : e[0] + "," + e.slice(1)
@@ -131,9 +131,9 @@
     continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
     t = new Uint8Array(
       await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
-        (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION_ID", 450000) + 18, 21) +
+        (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
         " 1 " +
-        (n = d.cookie).substr(n.indexOf("SAPISID=") + 8, 34) +
+        (n = d.cookie).substr(n.indexOf("SAPISID") + 8, 34) +
         " https://www.youtube.com"
       ))
     );
