@@ -52,13 +52,13 @@
           newRoot.appendChild(commentBlock);
 
         let { likeCountLiked } = toolbar;
-        let nodes = commentBlock.childNodes;
-        let likeBlock = nodes[4];
+        let nodes = commentBlock.firstChild;
+        let likeBlock = commentBlock.lastChild;
 
-        nodes[0].src = commentEntityPayload.avatar.image.sources[0].url;
-        nodes[1].data = commentEntityPayload.author.displayName + "  ";
-        nodes[2].textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-        nodes[3].data = "\n" + properties.content.content + "\n";
+        nodes.src = commentEntityPayload.avatar.image.sources[0].url;
+        (nodes = nodes.nextSibling).textContent = commentEntityPayload.author.displayName + "  ";
+        (nodes = nodes.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
+        nodes.nextSibling.data = "\n" + properties.content.content + "\n";
 
         likeBlock.textContent =
           mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
@@ -85,7 +85,7 @@
       }
       isNewest && (
         endCommentId = firstCommentId,
-        newRoot.insertBefore(commentFragment, newRoot.childNodes[4].nextSibling)
+        newRoot.insertBefore(commentFragment, newRoot.querySelector("i"))
       );
       resolve();
     });
