@@ -52,27 +52,27 @@
           newRoot.appendChild(commentBlock);
 
         let { likeCountLiked } = toolbar;
-        let nodes = commentBlock.firstChild;
+        let node = commentBlock.firstChild;
         let likeBlock = commentBlock.lastChild;
 
-        nodes.src = commentEntityPayload.avatar.image.sources[0].url;
-        (nodes = nodes.nextSibling).textContent = commentEntityPayload.author.displayName + "  ";
-        (nodes = nodes.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-        nodes.nextSibling.data = "\n" + properties.content.content + "\n";
+        node.src = commentEntityPayload.avatar.image.sources[0].url;
+        (node = node.nextSibling).textContent = commentEntityPayload.author.displayName + "  ";
+        (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
+        node.nextSibling.data = "\n" + properties.content.content + "\n";
 
         likeBlock.textContent =
           mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
-            ? (nodes = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
+            ? (node = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
               ? (
                 fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nodes + '"}',
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + node + '"}',
                   headers,
                   method: "POST"
                 }),
                 "💛 " + likeCountLiked
               )
               : (
-                likeBlock.nonce = nodes,
+                likeBlock.nonce = node,
                 likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
               )
             : "❤️ " + likeCountLiked;
