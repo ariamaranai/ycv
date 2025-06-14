@@ -90,13 +90,13 @@
       resolve();
     });
 
-  let observer = new IntersectionObserver(async entries =>
+  let observer = new IntersectionObserver(entries =>
     isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
     fetchNext(continuationNext, isReceived = 0, 0),
     { rootMargin: "16776399px 0px 0px", threshold: 1 }
   );
-  
-  setTimeout(async () => {
+
+  d.addEventListener("DOMContentLoaded", async () => {
     let n = oldRoot.lastChild.childNodes;
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
@@ -149,7 +149,7 @@
     };
     fetchNext(continuationNewest, 1, 0);
     observer.observe(newRoot);
-  });
+  }, { once: !0 });
 
   onkeydown = async e => e.keyCode != 116 || (
     e.preventDefault(),
