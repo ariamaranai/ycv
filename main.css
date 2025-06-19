@@ -9,8 +9,7 @@
   tab-size: 80px;
   white-space: pre-wrap;
   word-break: break-all;
-  overflow: hidden scroll;
-  scrollbar-width: none
+  overflow: hidden scroll
 }
 .r {
   display: flow;

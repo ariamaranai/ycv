@@ -8,15 +8,25 @@ chrome.alarms.onAlarm.addListener(() =>
     setting: "allow"
   })
 );
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "block"
-  }),
-  chrome.alarms.create({
-    delayInMinutes: .05
-  })
-));
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+  if (info.request.method != "POST") {
+    chrome.contentSettings.javascript.set({
+      primaryPattern: "https://www.youtube.com/*",
+      setting: "block"
+    }),
+    chrome.alarms.create({
+      delayInMinutes: .05
+    })
+  } else {
+    chrome.declarativeNetRequest.setExtensionActionOptions({
+      displayActionCountAsBadgeText: !0,
+      tabUpdate: {
+        increment: 1,
+        tabId: info.request.tabId
+      }
+    });
+  }
+});
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
@@ -51,8 +61,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         url:
         "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
         url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
-        "/",
-        type: "popup"
+        "/"
       });
       chrome.windows.update(windowId, {
         width: maxWindowWidth < windowWidth ? maxWindowWidth : windowWidth,
