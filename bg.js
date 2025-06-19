@@ -56,7 +56,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
       chrome.windows.create({
         width: 500,
         height: workArea.height,
-        left: maxWindowWidth,
+        left: maxWindowWidth - 12,
         top: 0,
         url:
         "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
