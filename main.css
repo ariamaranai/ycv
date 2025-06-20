@@ -5,7 +5,7 @@
   background-color: #111;
   font-size: 14px;
   font-family: math;
-  color: #ddd;
+  color: #eee;
   tab-size: 80px;
   white-space: pre-wrap;
   word-break: break-all;
@@ -48,7 +48,7 @@ u {
 a {
   display: contents;
   font-size: 12px;
-  color: #ddd
+  color: #eee
 }
 title {
   display: flow;
