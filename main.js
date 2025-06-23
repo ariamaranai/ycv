@@ -12,7 +12,7 @@
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
   let _commentBlock = d.createElement("i");
-  _commentBlock.append(new Image, "", d.createElement("s"), "", d.createElement("u"));
+  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;
@@ -55,9 +55,9 @@
         let node = commentBlock.firstChild;
         let likeBlock = commentBlock.lastChild;
 
-        node.src = commentEntityPayload.avatar.image.sources[0].url;
-        (node = node.nextSibling).textContent = commentEntityPayload.author.displayName + "  ";
+        node.data = commentEntityPayload.author.displayName + "  ";
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
+        (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
         likeBlock.textContent =
