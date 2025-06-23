@@ -20,7 +20,7 @@
 }
 i {
   display: flow;
-  margin-top: 24px;
+  margin-top: 20px;
   line-height: 20px;
   font-style: unset
 }
@@ -45,7 +45,8 @@ s {
 u {
   display: contents;
   contain: size;
-  line-height: 32px;
+  font-size: 14px;
+  line-height: 24px;
   user-select: none;
   cursor: pointer
 }

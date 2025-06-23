@@ -69,13 +69,13 @@
                   headers,
                   method: "POST"
                 }),
-                "💛 " + likeCountLiked
+                "💛" + likeCountLiked
               )
               : (
                 likeBlock.nonce = node,
-                likeCountLiked ? "🤍 " + toolbar.likeCountNotliked : "🤍"
+                likeCountLiked ? "🤍" + toolbar.likeCountNotliked : "🤍"
               )
-            : "❤️ " + likeCountLiked;
+            : "❤️" + likeCountLiked;
 
         isReply
           ? commentBlock.className = "r"
@@ -165,7 +165,7 @@
         headers,
         method: "POST"
       });
-      target.textContent = "❤️ " + (+target.textContent.slice(2) + 1);
+      target.textContent = "❤️" + (+target.textContent.slice(2) + 1);
       target.nonce = "";
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
@@ -183,7 +183,7 @@
               headers,
               method: "POST"
             }),
-            target.textContent = "💛 " + (+target.textContent.slice(2) + 1),
+            target.textContent = "💛" + (+target.textContent.slice(2) + 1),
             target.nonce = ""
           )
           ++i;
