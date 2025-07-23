@@ -100,7 +100,7 @@
     let n = oldRoot.lastChild.childNodes;
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
-    let p = t.indexOf('viewCoun', 3000) + 65;
+    let p = t.indexOf('viewCoun', 2500) + 65;
 
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
