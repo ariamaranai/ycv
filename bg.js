@@ -8,15 +8,25 @@ chrome.alarms.onAlarm.addListener(() =>
     setting: "allow"
   })
 );
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "block"
-  }),
-  chrome.alarms.create({
-    delayInMinutes: .05
-  })
-));
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+  if (info.request.method != "POST") {
+    chrome.contentSettings.javascript.set({
+      primaryPattern: "https://www.youtube.com/*",
+      setting: "block"
+    }),
+    chrome.alarms.create({
+      delayInMinutes: .05
+    })
+  } else {
+    chrome.declarativeNetRequest.setExtensionActionOptions({
+      displayActionCountAsBadgeText: !0,
+      tabUpdate: {
+        increment: 1,
+        tabId: info.request.tabId
+      }
+    });
+  }
+});
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
@@ -62,38 +72,49 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
     })
   ))
 );
-chrome.runtime.onInstalled.addListener(() => (
-  chrome.contextMenus.create({
-    id: "",
-    title: "View comments",
-    contexts: ["page", "video"],
-    documentUrlPatterns: [
-      "https://www.youtube.com/watch?v=*",
-      "https://www.youtube.com/embed/*",
-      "https://www.youtube.com/shorts/*"
-    ]
-  }),
-  chrome.contextMenus.create({
-    id: "1",
-    title: "View comments",
-    contexts: ["frame", "video", "link"],
-    targetUrlPatterns: [
-      "https://www.youtube.com/watch?v=*",
-      "https://www.youtube.com/embed/*",
-      "https://www.youtube.com/shorts/*",
-      "https://youtu.be/*"
-    ]
-  }),
-  chrome.storage.local.set({
-    0: []
-  }),
-  chrome.userScripts.configureWorld({
-    messaging: !0
-  }),
-  chrome.userScripts.register([{
-    id: "0",
-    js: [{ file: "main.js" }],
-    matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
-    runAt: "document_start"
-  }])
-));
+{
+  let f = () => {
+    let { userScripts } = chrome;
+    userScripts &&
+    userScripts.getScripts(scripts =>
+      scripts.length || (
+        userScripts.configureWorld({ messaging: !0 }),
+        userScripts.register([{
+          id: "0",
+          js: [{ file: "main.js" }],
+          matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
+          runAt: "document_start"
+        }]),
+        chrome.runtime.onStartup.removeListener(f)
+      )
+    );
+  }
+  chrome.runtime.onStartup.addListener(f);
+  chrome.runtime.onInstalled.addListener(() => (
+    chrome.contextMenus.create({
+      id: "",
+      title: "View comments",
+      contexts: ["page", "video"],
+      documentUrlPatterns: [
+        "https://www.youtube.com/watch?v=*",
+        "https://www.youtube.com/embed/*",
+        "https://www.youtube.com/shorts/*"
+      ]
+    }),
+    chrome.contextMenus.create({
+      id: "1",
+      title: "View comments",
+      contexts: ["frame", "video", "link"],
+      targetUrlPatterns: [
+        "https://www.youtube.com/watch?v=*",
+        "https://www.youtube.com/embed/*",
+        "https://www.youtube.com/shorts/*",
+        "https://youtu.be/*"
+      ]
+    }),
+    chrome.storage.local.set({
+      0: []
+    }),
+    f()
+  ));
+}
