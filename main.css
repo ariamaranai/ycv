@@ -12,14 +12,14 @@
   overflow: hidden scroll
 }
 .r {
-  display: flow;
+  display: block;
   margin-left: 48px
 }
 .e {
   filter: unset
 }
 i {
-  display: flow;
+  display: block;
   margin-top: 20px;
   line-height: 20px;
   font-style: unset
@@ -29,7 +29,7 @@ i:first-line {
   color: #ccc
 }
 img {
-  display: flow;
+  display: block;
   margin: -20px 0 -40px -48px;
   width: 40px;
   height: 40px;
@@ -56,7 +56,7 @@ a {
   color: #eee
 }
 title {
-  display: flow;
+  display: block;
   margin-left: 80px;
   font-weight: 600
 }
