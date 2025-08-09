@@ -3,13 +3,13 @@
   margin: 16px auto 8px;
   padding: 0 8px 0 56px;
   background-color: #111;
+  overflow: hidden scroll;
   font-size: 14px;
   font-family: arial;
   color: #eee;
   tab-size: 80px;
   white-space: pre-wrap;
-  word-break: break-all;
-  overflow: hidden scroll
+  word-break: break-all
 }
 .r {
   display: block;
@@ -47,8 +47,8 @@ u {
   contain: size;
   font-size: 14px;
   line-height: 24px;
-  user-select: none;
-  cursor: pointer
+  cursor: pointer;
+  user-select: none
 }
 a {
   display: contents;
