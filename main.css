@@ -1,7 +1,7 @@
 :root {
   width: 416px;
   margin: 16px auto 8px;
-  padding: 0 8px 0 56px;
+  padding: 0+8px+0+56px;
   background-color: #111;
   overflow-y: scroll;
   font-size: 14px;
@@ -30,7 +30,7 @@ i:first-line {
 }
 img {
   display: block;
-  margin: -20px 0 -40px -48px;
+  margin: -20px+0-40px-48px;
   width: 40px;
   height: 40px;
   border-radius: 20px;
@@ -61,7 +61,7 @@ title {
   font-weight: 600
 }
 p {
-  margin: -24px 0 0 368px;
+  margin: -24px+0+0+368px;
   font-size: 18px;
   filter: saturate(.5);
   cursor: pointer
