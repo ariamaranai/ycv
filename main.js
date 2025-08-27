@@ -105,7 +105,7 @@
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
-      "/hqdefault.jpg style=position:relative;z-index:1;width:120px;height:90px;margin-bottom:-76px;border-radius:0><title>" +
+      "/hqdefault.jpg style=position:relative;z-index:1;width:120px;height:90px;border-radius:0><title>" +
       e[1].content +
       "</title><a href=" +
       (e = e[6]).firstChild.href +

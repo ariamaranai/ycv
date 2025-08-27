@@ -56,7 +56,7 @@ a {
 }
 title {
   display: block;
-  margin-left: 80px;
+  margin: -76px+0+0+80px;
   font-weight: 600
 }
 p {
