@@ -11,7 +11,7 @@
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
-  let _commentBlock = d.createElement("i");
+  let _commentBlock = d.createElement("c");
   _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
 
   let commentFragment = new DocumentFragment;
@@ -29,7 +29,7 @@
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
       let i = isNewest;
 
-      if (!isReply) {
+      if (isReply == 0) {
         let { continuationItemRenderer } = continuationItems.at(-1);
         continuationItemRenderer
           ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
