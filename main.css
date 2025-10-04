@@ -11,6 +11,10 @@
   white-space: pre-wrap;
   word-break: break-all
 }
+:first-line {
+  font-size: 12px;
+  color: #ccc
+}
 .r {
   display: block;
   margin-left: 48px
@@ -20,12 +24,8 @@
 }
 c {
   display: block;
-  margin-top: 20px;
+  margin-top: 24px;
   line-height: 20px
-}
-c:first-line {
-  font-size: 12px;
-  color: #ccc
 }
 img {
   display: block;
@@ -55,11 +55,12 @@ a {
   color: #eee
 }
 title {
-  display: block;
+  display: flex;
   margin: -76px+0+0+80px;
   font-weight: 600
 }
 p {
+  display: flex;
   margin: -24px+0+0+368px;
   font-size: 18px;
   filter: saturate(.5);
