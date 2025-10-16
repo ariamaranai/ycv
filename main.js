@@ -12,7 +12,7 @@
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
   let _commentBlock = d.createElement("c");
-  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
+  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("U"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;
@@ -160,19 +160,21 @@
     let { tagName } = target;
     if (tagName == "U") {
       let { nonce } = target;
-      nonce && fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-        body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
-        headers,
-        method: "POST"
-      });
-      target.textContent = "❤️" + (+target.textContent.slice(2) + 1);
+      nonce && (
+        fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+          body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
+          headers,
+          method: "POST"
+        }),
+        target.textContent = "❤️" + (+target.textContent.slice(2) + 1)
+      );
       target.nonce = "";
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
       chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "e");
       if (isAutoLike) {
-        let targets = newRoot.getElementsByTagName("u");
+        let targets = newRoot.getElementsByTagName("U");
         let i = 0;
         while (i < targets.length) {
           let target = targets[i];
