@@ -60,7 +60,6 @@
         (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
-
         likeBlock.textContent =
           mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
             ? (action = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
@@ -118,13 +117,12 @@
       ((t[p = t.indexOf("yTex", p + 1300) + 8] == "I")
         ? t.slice(p += 23, t.indexOf(" ", p)).replaceAll(".", ",")
         : "-") +
-      "\x03" +
-      (
+      "\x03" + (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
           ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
             ? e.replaceAll(".", ",")
             : e[0] + "," + e.slice(1)
-        : "-"
+          : "-"
       ) +
       (isAutoLike ? "<p class=P>\x04" : "<p>\x04");
 
