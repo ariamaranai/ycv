@@ -26,10 +26,6 @@
       "enabled": true
     }]
   },
-  "web_accessible_resources": [{
-    "resources": ["*"],
-    "matches": ["<all_urls>"]
-  }],
   "background": {
     "service_worker": "bg.js"
   },
