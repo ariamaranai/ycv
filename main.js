@@ -18,9 +18,9 @@
   let endCommentId;
   let firstCommentId;
 
-  let fetchNext = async (continuation, isNewest, isReply, action) =>
+  let fetchNext = (continuation, isNewest, isReply, action) =>
     new Promise(async resolve => {
-      let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+      let r = await (await fetch("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
         headers,
         method: "POST"
@@ -162,7 +162,7 @@
     if (tagName == "U") {
       let { nonce } = target;
       nonce && (
-        fetch ("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+        fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
           headers,
           method: "POST"
