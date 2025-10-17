@@ -66,14 +66,14 @@
             ? (action = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
               ? (
                 fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + node + '"}',
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
                   headers,
                   method: "POST"
                 }),
                 "\x01" + likeCountLiked
               )
               : (
-                likeBlock.nonce = node,
+                likeBlock.nonce = action,
                 likeCountLiked ? "\x00" + toolbar.likeCountNotliked : "\x00"
               )
             : "\x01" + likeCountLiked;
