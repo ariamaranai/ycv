@@ -15,18 +15,5 @@
       "regexFilter": "^https://(www\\.youtube\\.com/watch\\?.*?v=|youtu.be/)(.{11}).*?/",
       "isUrlFilterCaseSensitive": true
     }
-  },
-  {
-    "id": 2,
-    "priority": 2147483646,
-    "action": {
-      "type": "allow"
-    },
-    "condition": {
-      "resourceTypes": ["xmlhttprequest"],
-      "requestMethods": ["post"],
-      "urlFilter": "|https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0|",
-      "isUrlFilterCaseSensitive": true
-    }
   }
 ]
