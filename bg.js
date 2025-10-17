@@ -8,15 +8,25 @@ chrome.alarms.onAlarm.addListener(() =>
     setting: "allow"
   })
 );
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "block"
-  }),
-  chrome.alarms.create({
-    delayInMinutes: .05
-  })
-));
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+  if (info.request.method != "POST") {
+    chrome.contentSettings.javascript.set({
+      primaryPattern: "https://www.youtube.com/*",
+      setting: "block"
+    }),
+    chrome.alarms.create({
+      delayInMinutes: .05
+    })
+  } else {
+    chrome.declarativeNetRequest.setExtensionActionOptions({
+      displayActionCountAsBadgeText: !0,
+      tabUpdate: {
+        increment: 1,
+        tabId: info.request.tabId
+      }
+    });
+  }
+});
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];

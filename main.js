@@ -11,14 +11,14 @@
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
-  let _commentBlock = d.createElement("c");
+  let _commentBlock = d.createElement("C");
   _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("U"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;
   let firstCommentId;
 
-  let fetchNext = async (continuation, isNewest, isReply) =>
+  let fetchNext = async (continuation, isNewest, isReply, action) =>
     new Promise(async resolve => {
       let r = await (await fetch ("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
@@ -60,25 +60,26 @@
         (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
+
         likeBlock.textContent =
           mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
-            ? (node = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
+            ? (action = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
               ? (
                 fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
                   body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + node + '"}',
                   headers,
                   method: "POST"
                 }),
-                "💛" + likeCountLiked
+                "\x01" + likeCountLiked
               )
               : (
                 likeBlock.nonce = node,
-                likeCountLiked ? "🤍" + toolbar.likeCountNotliked : "🤍"
+                likeCountLiked ? "\x00" + toolbar.likeCountNotliked : "\x00"
               )
-            : "❤️" + likeCountLiked;
+            : "\x01" + likeCountLiked;
 
         isReply
-          ? commentBlock.className = "r"
+          ? commentBlock.className = "C"
           : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
             await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
@@ -111,13 +112,13 @@
       (e = e[6]).firstChild.href +
       " target=_blank>\t" +
       e.lastChild.getAttribute("content") +
-      "</a>\n\t⚡ " +
+      "</a>\n\t\x02" +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
-      "　❤️ " +
+      " \x01" +
       ((t[p = t.indexOf("yTex", p + 1300) + 8] == "I")
         ? t.slice(p += 23, t.indexOf(" ", p)).replaceAll(".", ",")
         : "-") +
-      "　💬 " +
+      "\x03" +
       (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
           ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
@@ -125,7 +126,7 @@
             : e[0] + "," + e.slice(1)
         : "-"
       ) +
-      (isAutoLike ? "<p class=e>💞" : "<p>💞");
+      (isAutoLike ? "<p class=P>\x04" : "<p>\x04");
 
     if (e == "-") return;
     continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
@@ -166,13 +167,13 @@
           headers,
           method: "POST"
         }),
-        target.textContent = "❤️" + (+target.textContent.slice(2) + 1)
+        target.textContent = "\x01" + (+target.textContent.slice(1) + 1)
       );
       target.nonce = "";
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
-      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "e");
+      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "P");
       if (isAutoLike) {
         let targets = newRoot.getElementsByTagName("U");
         let i = 0;
@@ -185,7 +186,7 @@
               headers,
               method: "POST"
             }),
-            target.textContent = "💛" + (+target.textContent.slice(2) + 1),
+            target.textContent = "\x01" + (+target.textContent.slice(1) + 1),
             target.nonce = ""
           )
           ++i;
