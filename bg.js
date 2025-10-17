@@ -8,7 +8,7 @@ chrome.alarms.onAlarm.addListener(() =>
     setting: "allow"
   })
 );
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() =>
+chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
   chrome.contentSettings.javascript.set({
     primaryPattern: "https://www.youtube.com/*",
     setting: "block"
@@ -16,7 +16,7 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() =>
   chrome.alarms.create({
     delayInMinutes: .05
   })
-);
+));
 chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
