@@ -6,7 +6,6 @@
   let headers;
   let continuationNewest;
   let continuationNext;
-  let isReceived = 0;
 
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
@@ -33,9 +32,8 @@
         let { continuationItemRenderer } = continuationItems.at(-1);
         continuationItemRenderer
           ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
-          : observer.disconnect();
+          : oncontentvisibilityautostatechange = 0;
       }
-      isReceived = 1;
 
       while (i < mutations.length) {
         let { commentEntityPayload } = mutations[i].payload;
@@ -55,7 +53,7 @@
         let node = commentBlock.firstChild;
         let likeBlock = commentBlock.lastChild;
 
-        node.data = commentEntityPayload.author.displayName + "  ";
+        node.data = commentEntityPayload.author.displayName + "　";
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
         (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
@@ -89,12 +87,6 @@
       );
       resolve();
     });
-
-  let observer = new IntersectionObserver(entries =>
-    isReceived && newRoot.scrollTop && entries[0].intersectionRect.height == newRoot.offsetHeight &&
-    fetchNext(continuationNext, isReceived = 0, 0),
-    { rootMargin: "16776399px 0px 0px", threshold: 1 }
-  );
 
   d.addEventListener("DOMContentLoaded", async () => {
     let n = oldRoot.lastChild.childNodes;
@@ -146,8 +138,8 @@
       authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
       "content-type": ""
     };
-    fetchNext(continuationNewest, 1, 0);
-    observer.observe(newRoot);
+    await fetchNext(continuationNewest, 1, 0);
+    oncontentvisibilityautostatechange = async e => e.skipped || await fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
 
   onkeydown = async e => e.keyCode != 116 || (

@@ -4,6 +4,7 @@
 }
 :root {
   width: 416px;
+  height: 100%;
   margin: 16px auto 8px;
   padding: 0+8px+0+56px;
   background-color: #111;
@@ -30,6 +31,9 @@ C {
   display: block;
   margin-top: 24px;
   line-height: 20px
+}
+C:last-child {
+  content-visibility: auto
 }
 img {
   display: block;
