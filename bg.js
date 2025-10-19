@@ -58,7 +58,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         width: maxWindowWidth < windowWidth ? maxWindowWidth : windowWidth,
         left: 0,
         top: 0,
-        state: ""
+        state: "normal"
       });
     })
   ))
