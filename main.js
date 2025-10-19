@@ -85,7 +85,7 @@
 
       isNewest && (
         endCommentId = firstCommentId,
-        commentFragment.childElementCount && newRoot.insertBefore(commentFragment, newRoot.querySelector("C"))
+        newRoot.insertBefore(commentFragment, commentFragment.childElementCount ? null : querySelector("C"))
       );
       resolve();
     });
