@@ -48,6 +48,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         height: workArea.height,
         left: maxWindowWidth - 12,
         top: 0,
+        type: "popup",
         url:
         "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
         url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
@@ -57,13 +58,13 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         width: maxWindowWidth < windowWidth ? maxWindowWidth : windowWidth,
         left: 0,
         top: 0,
-        state: "normal"
+        state: ""
       });
     })
   ))
 );
 {
-  let f = () => {
+  let onStartup = () => {
     let { userScripts } = chrome;
     userScripts &&
     userScripts.getScripts(scripts =>
@@ -75,11 +76,11 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
           matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
           runAt: "document_start"
         }]),
-        chrome.runtime.onStartup.removeListener(f)
+        chrome.runtime.onStartup.removeListener(onStartup)
       )
     );
   }
-  chrome.runtime.onStartup.addListener(f);
+  chrome.runtime.onStartup.addListener(onStartup);
   chrome.runtime.onInstalled.addListener(() => (
     chrome.contextMenus.create({
       id: "",
@@ -105,6 +106,6 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
     chrome.storage.local.set({
       0: []
     }),
-    f()
+    onStartup()
   ));
 }
