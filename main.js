@@ -47,6 +47,7 @@
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
         } else
+          commentFragment.childElementCount && newRoot.appendChild(commentFragment),
           newRoot.appendChild(commentBlock);
 
         let { likeCountLiked } = toolbar;
@@ -81,9 +82,10 @@
             await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
+
       isNewest && (
         endCommentId = firstCommentId,
-        newRoot.insertBefore(commentFragment, newRoot.querySelector("i"))
+        commentFragment.childElementCount && newRoot.insertBefore(commentFragment, newRoot.querySelector("C"))
       );
       resolve();
     });
@@ -144,7 +146,7 @@
 
   onkeydown = async e => e.keyCode != 116 || (
     e.preventDefault(),
-    fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
+    await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
     let { target } = e;
