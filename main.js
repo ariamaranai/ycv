@@ -82,11 +82,10 @@
             await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
-
-      isNewest && (
-        endCommentId = firstCommentId,
-        newRoot.insertBefore(commentFragment, commentFragment.childElementCount ? null : querySelector("C"))
-      );
+      let { childElementCount } = commentFragment;
+      isNewest
+        ? (endCommentId = firstCommentId, newRoot.insertBefore(commentFragment, childElementCount ? null : querySelector("C")))
+        : childElementCount &&  newRoot.appendChild(commentFragment);
       resolve();
     });
 
