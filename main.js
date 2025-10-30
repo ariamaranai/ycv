@@ -17,32 +17,29 @@
   let endCommentId;
   let firstCommentId;
 
-  let fetchNext = (continuation, isNewest, isReply, action) =>
+  let fetchNext = (continuation, isNewest, isReply) =>
     new Promise(async resolve => {
       let r = await (await fetch("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
         headers,
         method: "POST"
       })).json();
-      let { mutations } = r.frameworkUpdates.entityBatchUpdate;
-      let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
-      let i = isNewest;
-
+      let continuationItems = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"].continuationItems;
       if (isReply == 0) {
-        let { continuationItemRenderer } = continuationItems.at(-1);
+        let continuationItemRenderer = continuationItems.at(-1).continuationItemRenderer;
         continuationItemRenderer
           ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
           : oncontentvisibilityautostatechange = 0;
       }
-
+      let mutations = r.frameworkUpdates.entityBatchUpdate.mutations;
+      let i = isNewest;
       while (i < mutations.length) {
-        let { commentEntityPayload } = mutations[i].payload;
-        let { properties, toolbar } = commentEntityPayload;
-        let { publishedTime } = properties;
+        let commentEntityPayload = mutations[i].payload.commentEntityPayload;
+        let properties = commentEntityPayload.properties;
         let commentBlock = _commentBlock.cloneNode(1);
-  
+
         if (isNewest) {
-          let { commentId } = properties;
+          let commentId = properties.commentId;
           if (commentId == endCommentId) break;
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
@@ -50,31 +47,34 @@
           commentFragment.childElementCount && newRoot.appendChild(commentFragment),
           newRoot.appendChild(commentBlock);
 
-        let { likeCountLiked } = toolbar;
         let node = commentBlock.firstChild;
-        let likeBlock = commentBlock.lastChild;
-
         node.data = commentEntityPayload.author.displayName + "　";
+        let publishedTime = properties.publishedTime;
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
         (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
-        likeBlock.textContent =
-          mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED"
-            ? (action = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action, isAutoLike)
+        let toolbar = commentEntityPayload.toolbar;
+        let likeCountLiked = toolbar.likeCountLiked;
+        let likeBlock = commentBlock.lastChild;
+        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
+          let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
+          likeBlock.textContent = 
+            isAutoLike
               ? (
                 fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + action + '"}',
+                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + endpoint + '"}',
                   headers,
                   method: "POST"
                 }),
                 "\x01" + likeCountLiked
               )
               : (
-                likeBlock.nonce = action,
+                likeBlock.nonce = endpoint,
                 likeCountLiked ? "\x00" + toolbar.likeCountNotliked : "\x00"
-              )
-            : "\x01" + likeCountLiked;
+            );
+        } else
+          likeBlock.textContent = "\x01" + likeCountLiked;
 
         isReply
           ? commentBlock.className = "C"
@@ -82,10 +82,10 @@
             await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
-      let { childElementCount } = commentFragment;
+      let childElementCount = commentFragment.childElementCount;
       isNewest
-        ? (endCommentId = firstCommentId, newRoot.insertBefore(commentFragment, childElementCount ? null : querySelector("C")))
-        : childElementCount &&  newRoot.appendChild(commentFragment);
+        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("C")), endCommentId = firstCommentId)
+        : childElementCount && newRoot.appendChild(commentFragment);
       resolve();
     });
 
@@ -94,7 +94,6 @@
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
     let p = t.indexOf('viewCoun', 2500) + 65;
-
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
@@ -142,16 +141,15 @@
     await fetchNext(continuationNewest, 1, 0);
     oncontentvisibilityautostatechange = async e => e.skipped || await fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
-
   onkeydown = async e => e.keyCode != 116 || (
     e.preventDefault(),
     await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
-    let { target } = e;
-    let { tagName } = target;
+    let target = e.target;
+    let tagName = target.tagName;
     if (tagName == "U") {
-      let { nonce } = target;
+      let nonce = target.nonce;
       nonce && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
@@ -170,7 +168,7 @@
         let i = 0;
         while (i < targets.length) {
           let target = targets[i];
-          let { nonce } = target;
+          let nonce = target.nonce;
           nonce && (
             fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
               body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',

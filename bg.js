@@ -38,7 +38,7 @@ chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
 chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
   chrome.system.display.getInfo((infos =>
     chrome.windows.get(windowId, window => {
-      let { workArea } = infos[0];
+      let workArea = infos[0].workArea;
       let workAreaWidth = workArea.width;
       let maxWindowWidth = workAreaWidth - 500;
       let windowWidth = window.width;
@@ -65,7 +65,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
 );
 {
   let onStartup = () => {
-    let { userScripts } = chrome;
+    let userScripts = chrome.userScripts;
     userScripts &&
     userScripts.getScripts(scripts =>
       scripts.length || (
