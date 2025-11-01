@@ -24,22 +24,22 @@
         headers,
         method: "POST"
       })).json();
-      let continuationItems = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"].continuationItems;
+      let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
       if (isReply == 0) {
-        let continuationItemRenderer = continuationItems.at(-1).continuationItemRenderer;
+        let { continuationItemRenderer } = continuationItems.at(-1);
         continuationItemRenderer
           ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
           : oncontentvisibilityautostatechange = 0;
       }
-      let mutations = r.frameworkUpdates.entityBatchUpdate.mutations;
+      let { mutations } = r.frameworkUpdates.entityBatchUpdate;
       let i = isNewest;
       while (i < mutations.length) {
-        let commentEntityPayload = mutations[i].payload.commentEntityPayload;
-        let properties = commentEntityPayload.properties;
+        let { commentEntityPayload } = mutations[i].payload;
+        let { properties } = commentEntityPayload;
         let commentBlock = _commentBlock.cloneNode(1);
 
         if (isNewest) {
-          let commentId = properties.commentId;
+          let { commentId } = properties;
           if (commentId == endCommentId) break;
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
@@ -49,13 +49,13 @@
 
         let node = commentBlock.firstChild;
         node.data = commentEntityPayload.author.displayName + "　";
-        let publishedTime = properties.publishedTime;
+        let { publishedTime } = properties;
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
         (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
-        let toolbar = commentEntityPayload.toolbar;
-        let likeCountLiked = toolbar.likeCountLiked;
+        let { toolbar } = commentEntityPayload;
+        let { likeCountLiked } = toolbar;
         let likeBlock = commentBlock.lastChild;
         if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
           let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
@@ -82,7 +82,7 @@
             await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
-      let childElementCount = commentFragment.childElementCount;
+      let { childElementCount } = commentFragment;
       isNewest
         ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("C")), endCommentId = firstCommentId)
         : childElementCount && newRoot.appendChild(commentFragment);
@@ -146,10 +146,10 @@
     await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
   onclick = e => {
-    let target = e.target;
-    let tagName = target.tagName;
+    let { target } = e;
+    let { tagName } = target;
     if (tagName == "U") {
-      let nonce = target.nonce;
+      let { nonce } = target.nonce;
       nonce && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + nonce + '"}',
