@@ -95,7 +95,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
     chrome.contextMenus.create({
       id: "1",
       title: "View comments",
-      contexts: ["frame", "video", "link"],
+      contexts: ["video", "link"],
       targetUrlPatterns: [
         "https://www.youtube.com/watch?v=*",
         "https://www.youtube.com/embed/*",
