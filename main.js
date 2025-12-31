@@ -141,7 +141,7 @@
     await fetchNext(continuationNewest, 1, 0);
     oncontentvisibilityautostatechange = async e => e.skipped || await fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
-  onkeydown = async e => e.keyCode != 116 || (
+  onkeydown = async e => e.which != 116 || (
     e.preventDefault(),
     await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
