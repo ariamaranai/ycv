@@ -79,7 +79,7 @@
         isReply
           ? commentBlock.className = "C"
           : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
-            await fetchNext(continuationItems[Math.floor(i / 5)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
+            await fetchNext(continuationItems[Math.floor(i * .2)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
       let { childElementCount } = commentFragment;
