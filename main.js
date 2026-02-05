@@ -93,7 +93,7 @@
     let n = oldRoot.lastChild.childNodes;
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
-    let p = t.indexOf('viewCoun', 2500) + 65;
+    let p = t.indexOf('"viewCount"', 2500) + 66;
     newRoot.innerHTML =
       "<img src=//i.ytimg.com/vi/" +
       location.href.slice(-11) +
@@ -106,9 +106,7 @@
       "</a>\n\t\x02" +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
       " \x01" +
-      ((t[p = t.indexOf("yTex", p + 1300) + 8] == "I")
-        ? t.slice(p += 23, t.indexOf(" ", p)).replaceAll(".", ",")
-        : "-") +
+      (t.slice(p = t.indexOf('"LIKE","titl', p) + 16, t.indexOf('"', p)).replace("Mag ich", "").replaceAll(".", ",")) +
       "\x03" + (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
           ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
