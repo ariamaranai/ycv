@@ -70,7 +70,7 @@
                 "\x01" + likeCountLiked
               )
               : (
-                likeBlock.blur = endpoint,
+                likeBlock.k = endpoint,
                 likeCountLiked ? "\x00" + toolbar.likeCountNotliked : "\x00"
             );
         } else
@@ -147,16 +147,16 @@
     let { target } = e;
     let { tagName } = target;
     if (tagName == "U") {
-      let key = target.blur;
+      let key = target.k;
       key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
           headers,
           method: "POST"
         }),
-        target.textContent = "\x01" + (+target.textContent.slice(1) + 1)
+        target.textContent = "\x01" + (+target.textContent.slice(1) + 1),
+        target.k = ""
       );
-      target.blur = "";
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (tagName == "P") {
@@ -166,7 +166,7 @@
         let i = 0;
         while (i < targets.length) {
           let target = targets[i];
-          let key = target.blur;
+          let key = target.k;
           key && (
             fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
               body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
@@ -174,7 +174,7 @@
               method: "POST"
             }),
             target.textContent = "\x01" + (+target.textContent.slice(1) + 1),
-            target.blur = ""
+            target.k = ""
           )
           ++i;
         }
