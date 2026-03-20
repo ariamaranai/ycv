@@ -17,7 +17,7 @@ chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
     delayInMinutes: .05
   })
 ));
-chrome.runtime.onUserScriptMessage.addListener((m, s, r) => {
+chrome.runtime.onMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
     let targetVideoId = s.tab.url.slice(-11);
@@ -65,14 +65,11 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
 );
 {
   let onStartup = () => {
-    let { userScripts } = chrome;
-    userScripts &&
-    userScripts.getScripts(scripts =>
+    chrome.scripting.getRegisteredContentScripts(scripts =>
       scripts.length || (
-        userScripts.configureWorld({ messaging: !0 }),
-        userScripts.register([{
+        chrome.scripting.registerContentScripts([{
           id: "0",
-          js: [{ file: "main.js" }],
+          js: ["main.js"],
           matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
           runAt: "document_start"
         }]),

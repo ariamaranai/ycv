@@ -12,9 +12,9 @@
     "contextMenus",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback",
+    "scripting",
     "storage",
-    "system.display",
-    "userScripts"
+    "system.display"
   ],
   "host_permissions": [
     "<all_urls>"
