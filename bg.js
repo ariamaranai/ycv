@@ -54,7 +54,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
         "/"
       });
-      chrome.windows.update(windowId, {
+      return chrome.windows.update(windowId, {
         width: maxWindowWidth < windowWidth ? maxWindowWidth : windowWidth,
         left: 0,
         top: 0,
@@ -100,9 +100,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         "https://youtu.be/*"
       ]
     }),
-    chrome.storage.local.set({
-      0: []
-    }),
+    chrome.storage.local.set({ 0: [] }),
     onStartup()
   ));
 }
