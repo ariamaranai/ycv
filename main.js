@@ -67,14 +67,14 @@
                   headers,
                   method: "POST"
                 }),
-                "\x01" + likeCountLiked
+                "\1" + likeCountLiked
               )
               : (
                 likeBlock.nonce = endpoint,
-                likeCountLiked ? "\x00" + toolbar.likeCountNotliked : "\x00"
+                likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0"
             );
         } else
-          likeBlock.textContent = "\x01" + likeCountLiked;
+          likeBlock.textContent = "\1" + likeCountLiked;
 
         isReply
           ? commentBlock.className = "C"
@@ -103,18 +103,18 @@
       (e = e[6]).firstChild.href +
       " target=_blank>\t" +
       e.lastChild.getAttribute("content") +
-      "</a>\n\t\x02" +
+      "</a>\n\t\2" +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
-      " \x01" +
+      " \1" +
       (t.slice(p = t.indexOf('"LIKE","titl', p) + 16, t.indexOf('"', p)).replace("Mag ich", "").replaceAll(".", ",")) +
-      "\x03" + (
+      "\3" + (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
           ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
             ? e.replaceAll(".", ",")
             : e[0] + "," + e.slice(1)
           : "-"
       ) +
-      (isAutoLike ? "<p class=P>\x04" : "<p>\x04");
+      (isAutoLike ? "<p class=P>\4" : "<p>\4");
 
     if (e == "-") return;
     continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
@@ -154,7 +154,7 @@
           headers,
           method: "POST"
         }),
-        target.textContent = "\x01" + (+target.textContent.slice(1) + 1),
+        target.textContent = "\0" + (+target.textContent.slice(1) + 1),
         target.nonce = ""
       );
    } else if (tagName == "IMG")
@@ -173,7 +173,7 @@
               headers,
               method: "POST"
             }),
-            target.textContent = "\x01" + (+target.textContent.slice(1) + 1),
+            target.textContent = "\0" + (+target.textContent.slice(1) + 1),
             target.nonce = ""
           )
           ++i;
