@@ -63,44 +63,27 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
     })
   ))
 );
-{
-  let onStartup = () => {
-    chrome.scripting.getRegisteredContentScripts(scripts =>
-      scripts.length || (
-        chrome.scripting.registerContentScripts([{
-          id: "0",
-          js: ["main.js"],
-          matches: ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
-          runAt: "document_start"
-        }]),
-        chrome.runtime.onStartup.removeListener(onStartup)
-      )
-    );
-  }
-  chrome.runtime.onStartup.addListener(onStartup);
-  chrome.runtime.onInstalled.addListener(() => (
-    chrome.contextMenus.create({
-      id: "",
-      title: "View comments",
-      contexts: ["page", "video"],
-      documentUrlPatterns: [
-        "https://www.youtube.com/watch?v=*",
-        "https://www.youtube.com/embed/*",
-        "https://www.youtube.com/shorts/*"
-      ]
-    }),
-    chrome.contextMenus.create({
-      id: "1",
-      title: "View comments",
-      contexts: ["video", "link"],
-      targetUrlPatterns: [
-        "https://www.youtube.com/watch?v=*",
-        "https://www.youtube.com/embed/*",
-        "https://www.youtube.com/shorts/*",
-        "https://youtu.be/*"
-      ]
-    }),
-    chrome.storage.local.set({ 0: [] }),
-    onStartup()
-  ));
-}
+chrome.runtime.onInstalled.addListener(() => (
+  chrome.contextMenus.create({
+    id: "",
+    title: "View comments",
+    contexts: ["page", "video"],
+    documentUrlPatterns: [
+      "https://www.youtube.com/watch?v=*",
+      "https://www.youtube.com/embed/*",
+      "https://www.youtube.com/shorts/*"
+    ]
+  }),
+  chrome.contextMenus.create({
+    id: "1",
+    title: "View comments",
+    contexts: ["video", "link"],
+    targetUrlPatterns: [
+      "https://www.youtube.com/watch?v=*",
+      "https://www.youtube.com/embed/*",
+      "https://www.youtube.com/shorts/*",
+      "https://youtu.be/*"
+    ]
+  }),
+  chrome.storage.local.set({ 0: [] })
+));

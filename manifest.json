@@ -31,6 +31,7 @@
   },
   "content_scripts": [{
     "css": ["main.css"],
+    "js": ["main.js"],
     "matches": ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
     "run_at": "document_start"
   }],

@@ -154,7 +154,7 @@
           headers,
           method: "POST"
         }),
-        target.textContent = "\0" + (+target.textContent.slice(1) + 1),
+        target.textContent = "\1" + (+target.textContent.slice(1) + 1),
         target.nonce = ""
       );
    } else if (tagName == "IMG")
@@ -173,7 +173,7 @@
               headers,
               method: "POST"
             }),
-            target.textContent = "\0" + (+target.textContent.slice(1) + 1),
+            target.textContent = "\1" + (+target.textContent.slice(1) + 1),
             target.nonce = ""
           )
           ++i;
