@@ -51,7 +51,7 @@ chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
         type: "popup",
         url:
         "https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=" +
-        url.substr(url[8] != "y" ? url[24] == "w" ? 32 : url[24] == "e" ? 30 : 31 : 17, 11) +
+        url.substr(url.charCodeAt(8) == 121 ? 17 : url.charCodeAt(24) == 119 ? 32 : url.charCodeAt(24) == 101 ? 30 : 31, 11) +
         "/"
       });
       return chrome.windows.update(windowId, {

@@ -57,7 +57,9 @@
         let { toolbar } = commentEntityPayload;
         let { likeCountLiked } = toolbar;
         let likeBlock = commentBlock.lastChild;
-        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState != "TOOLBAR_LIKE_STATE_LIKED") {
+        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState == "TOOLBAR_LIKE_STATE_LIKED")
+          likeBlock.textContent = "\1" + likeCountLiked;
+        else {
           let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
           likeBlock.textContent = 
             isAutoLike
@@ -73,8 +75,7 @@
                 likeBlock.nonce = endpoint,
                 likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0"
             );
-        } else
-          likeBlock.textContent = "\1" + likeCountLiked;
+        }
 
         isReply
           ? commentBlock.className = "C"
@@ -109,9 +110,9 @@
       (t.slice(p = t.indexOf('"LIKE","titl', p) + 16, t.indexOf('"', p)).replace("Mag ich", "").replaceAll(".", ",")) +
       "\3" + (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
-          ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length != 4
-            ? e.replaceAll(".", ",")
-            : e[0] + "," + e.slice(1)
+          ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length == 4
+            ? e[0] + "," + e.slice(1)
+            : e.replaceAll(".", ",")
           : "-"
       ) +
       (isAutoLike ? "<p class=P>\4" : "<p>\4");
@@ -139,7 +140,7 @@
     await fetchNext(continuationNewest, 1, 0);
     oncontentvisibilityautostatechange = async e => e.skipped || await fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
-  onkeydown = async e => e.which != 116 || (
+  onkeydown = async e => e.which == 116 && (
     e.preventDefault(),
     await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
