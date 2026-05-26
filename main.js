@@ -10,8 +10,8 @@
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
-  let _commentBlock = d.createElement("C");
-  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("U"));
+  let _commentBlock = d.createElement("dt");
+  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;
@@ -85,7 +85,7 @@
       }
       let { childElementCount } = commentFragment;
       isNewest
-        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("C")), endCommentId = firstCommentId)
+        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("dt")), endCommentId = firstCommentId)
         : childElementCount && newRoot.appendChild(commentFragment);
       resolve();
     });
@@ -147,7 +147,7 @@
   onclick = e => {
     let { target } = e;
     let { tagName } = target;
-    if (tagName == "U") {
+    if (tagName == "u") {
       let key = target.nonce;
       key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
@@ -160,10 +160,10 @@
       );
    } else if (tagName == "IMG")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
-    else if (tagName == "P") {
-      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "P");
+    else if (tagName == "p") {
+      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "p");
       if (isAutoLike) {
-        let targets = newRoot.getElementsByTagName("U");
+        let targets = newRoot.getElementsByTagName("u");
         let i = 0;
         while (i < targets.length) {
           let target = targets[i];
