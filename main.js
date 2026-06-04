@@ -146,8 +146,8 @@
   );
   onclick = e => {
     let { target } = e;
-    let { tagName } = target;
-    if (tagName == "u") {
+    let { localName } = target;
+    if (localName == "u") {
       let key = target.nonce;
       key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
@@ -158,9 +158,9 @@
         target.textContent = "\1" + (+target.textContent.slice(1) + 1),
         target.nonce = ""
       );
-   } else if (tagName == "IMG")
+   } else if (localName == "img")
       open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
-    else if (tagName == "p") {
+    else if (localName == "p") {
       chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "p");
       if (isAutoLike) {
         let targets = newRoot.getElementsByTagName("u");
