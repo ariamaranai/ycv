@@ -10,7 +10,7 @@
   let isAutoLike;
   chrome.runtime.sendMessage(0, m => isAutoLike = m);
 
-  let _commentBlock = d.createElement("dt");
+  let _commentBlock = d.createElement("abbr");
   _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
 
   let commentFragment = new DocumentFragment;
@@ -85,7 +85,7 @@
       }
       let { childElementCount } = commentFragment;
       isNewest
-        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("dt")), endCommentId = firstCommentId)
+        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("abbr")), endCommentId = firstCommentId)
         : childElementCount && newRoot.appendChild(commentFragment);
       resolve();
     });

@@ -34,7 +34,8 @@
 .p {
   color: #eee
 }
-dt {
+abbr {
+  display: block;
   margin-top: 24px;
   line-height: 20px
 }
