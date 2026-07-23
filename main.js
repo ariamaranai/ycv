@@ -51,7 +51,7 @@
         node.data = commentEntityPayload.author.displayName + "　";
         let { publishedTime } = properties;
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
-        (node = node.nextSibling).src = commentEntityPayload.avatar.image.sources[0].url;
+        (node = node.nextSibling).src = commentEntityPayload.author.avatarThumbnailUrl;
         node.nextSibling.data = "\n" + properties.content.content + "\n";
 
         let { toolbar } = commentEntityPayload;
@@ -61,7 +61,7 @@
           likeBlock.textContent = "\1" + likeCountLiked;
         else {
           let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
-          likeBlock.textContent = 
+          likeBlock.textContent =
             isAutoLike
               ? (
                 fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
