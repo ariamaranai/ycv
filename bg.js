@@ -1,22 +1,3 @@
-chrome.contentSettings.javascript.set({
-  primaryPattern: "https://www.youtube.com/*",
-  setting: "allow"
-});
-chrome.alarms.onAlarm.addListener(() =>
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "allow"
-  })
-);
-chrome.declarativeNetRequest.onRuleMatchedDebug.addListener(() => (
-  chrome.contentSettings.javascript.set({
-    primaryPattern: "https://www.youtube.com/*",
-    setting: "block"
-  }),
-  chrome.alarms.create({
-    delayInMinutes: .05
-  })
-));
 chrome.runtime.onMessage.addListener((m, s, r) => {
   chrome.storage.local.get("0", v => {
     let videoIds = v[0];
@@ -28,9 +9,7 @@ chrome.runtime.onMessage.addListener((m, s, r) => {
       index < 0
         ? m && videoIds.push(targetVideoId)
         : m || videoIds.splice(index, 1);
-      chrome.storage.local.set({
-        0: videoIds
-      });
+      chrome.storage.local.set({ 0: videoIds });
     }
   });
   return !0

@@ -7,11 +7,8 @@
     "128": "128.png"
   },
   "permissions": [
-    "alarms",
-    "contentSettings",
     "contextMenus",
     "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
     "scripting",
     "storage",
     "system.display"
