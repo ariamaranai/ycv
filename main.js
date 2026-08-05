@@ -24,6 +24,7 @@
         headers,
         method: "POST"
       })).json();
+      console.log(r);
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
       if (isReply == 0) {
         let { continuationItemRenderer } = continuationItems.at(-1);
@@ -118,7 +119,8 @@
       (isAutoLike ? "<p class=P>\4" : "<p>\4");
 
     if (e == "-") return;
-    continuationNewest = t.substr(t.indexOf("Eg0SC", p + 700), 100);
+    console.log(t.slice(p));
+    continuationNewest = t.substr(t.indexOf("Eg0SC"), 100);
     t = new Uint8Array(
       await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
         (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
