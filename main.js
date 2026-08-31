@@ -140,7 +140,7 @@
       "content-type": ""
     };
     await fetchNext(continuationNewest, 1, 0);
-    oncontentvisibilityautostatechange = async e => e.skipped || await fetchNext(continuationNext, 0, 0);
+    oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
   onkeydown = async e => e.which == 116 && (
     e.preventDefault(),

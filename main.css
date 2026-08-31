@@ -21,6 +21,7 @@
 :root::after {
   content: "";
   display: block;
+  margin-top: 50vh;
   content-visibility: auto
 }
 ::first-line {
