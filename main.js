@@ -2,7 +2,6 @@
   let d = document;
   let newRoot = d.createElement("body");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
-
   let headers;
   let continuationNewest;
   let continuationNext;
@@ -24,9 +23,8 @@
         headers,
         method: "POST"
       })).json();
-      console.log(r);
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
-      if (isReply == 0) {
+      if (isReply === 0) {
         let { continuationItemRenderer } = continuationItems.at(-1);
         continuationItemRenderer
           ? continuationNext = continuationItemRenderer.continuationEndpoint.continuationCommand.token
@@ -41,7 +39,7 @@
 
         if (isNewest) {
           let { commentId } = properties;
-          if (commentId == endCommentId) break;
+          if (commentId === endCommentId) break;
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
         } else
@@ -58,7 +56,7 @@
         let { toolbar } = commentEntityPayload;
         let { likeCountLiked } = toolbar;
         let likeBlock = commentBlock.lastChild;
-        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState == "TOOLBAR_LIKE_STATE_LIKED")
+        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState === "TOOLBAR_LIKE_STATE_LIKED")
           likeBlock.textContent = "\1" + likeCountLiked;
         else {
           let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
@@ -81,7 +79,7 @@
         isReply
           ? commentBlock.className = "c"
           : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
-            await fetchNext(continuationItems[Math.floor(i * .2)].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
+            await fetchNext(continuationItems[i * .2 ^ 0].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
       let { childElementCount } = commentFragment;
@@ -119,7 +117,6 @@
       (isAutoLike ? "<p class=P>\4" : "<p>\4");
 
     if (e == "-") return;
-    console.log(t.slice(p));
     continuationNewest = t.substr(t.indexOf("Eg0SC"), 100);
     t = new Uint8Array(
       await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
@@ -142,16 +139,18 @@
     await fetchNext(continuationNewest, 1, 0);
     oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
-  onkeydown = async e => e.which == 116 && (
+
+  onkeydown = e => e.keyCode == 116 && (
     e.preventDefault(),
-    await fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
+    fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
   );
+
   onclick = e => {
     let { target } = e;
     let { localName } = target;
-    if (localName == "u") {
+    if (localName === "u") {
       let key = target.nonce;
-      key && (
+      return key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
           headers,
@@ -161,7 +160,7 @@
         target.nonce = ""
       );
    } else if (localName == "img")
-      open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
+      return open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
     else if (localName == "p") {
       chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "p");
       if (isAutoLike) {
