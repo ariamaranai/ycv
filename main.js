@@ -1,12 +1,12 @@
 {
   let d = document;
-  let newRoot = d.createElement("body");
+  let newRoot = d.createElement("layer");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
   let headers;
   let continuationNewest;
   let continuationNext;
   let _commentBlock = d.createElement("rb");
-  _commentBlock.append("", d.createElement("rtc"), new Image, "", d.createElement("abbr"));
+  _commentBlock.append("", d.createElement("abbr"), new Image, "", d.createElement("rtc"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;
@@ -130,7 +130,7 @@
 
   onclick = ({ target }) => {
     let { localName } = target;
-    if (localName === "u") {
+    if (localName === "rtc") {
       let key = target[0];
       return key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
