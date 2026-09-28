@@ -6,7 +6,7 @@
   let continuationNewest;
   let continuationNext;
   let _commentBlock = d.createElement("rb");
-  _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
+  _commentBlock.append("", d.createElement("rtc"), new Image, "", d.createElement("abbr"));
 
   let commentFragment = new DocumentFragment;
   let endCommentId;

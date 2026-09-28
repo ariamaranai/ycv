@@ -49,12 +49,12 @@ img {
   cursor: pointer;
   user-select: none
 }
-s {
+rtc {
   display: contents;
   font-size: 12px;
   color: #bbb
 }
-u {
+abbr {
   display: contents;
   font-size: 14px;
   line-height: 24px;
