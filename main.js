@@ -2,21 +2,19 @@
   let d = document;
   let newRoot = d.createElement("layer");
   let oldRoot = d.replaceChild(newRoot, d.lastChild);
-  let headers;
-  let continuationNewest;
-  let continuationNext;
   let _commentBlock = d.createElement("rb");
   _commentBlock.append("", d.createElement("abbr"), new Image, "", d.createElement("rtc"));
-
   let commentFragment = new DocumentFragment;
   let endCommentId;
   let firstCommentId;
-
+  let authorization;
+  let continuationNewest;
+  let continuationNext;
   let fetchNext = (continuation, isNewest, isReply) =>
     new Promise(async resolve => {
       let r = await (await fetch("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+        headers: { "content-type": "", authorization },
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
-        headers,
         method: "POST"
       })).json();
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
@@ -45,6 +43,7 @@
 
         let node = commentBlock.firstChild;
         node.data = commentEntityPayload.author.displayName + "　";
+
         let { publishedTime } = properties;
         (node = node.nextSibling).textContent = publishedTime.length < 18 ? publishedTime : publishedTime.slice(0, -9);
         (node = node.nextSibling).src = commentEntityPayload.author.avatarThumbnailUrl;
@@ -53,12 +52,13 @@
         let { toolbar } = commentEntityPayload;
         let { likeCountLiked } = toolbar;
         let likeBlock = commentBlock.lastChild;
-        if (mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState === "TOOLBAR_LIKE_STATE_LIKED")
-          likeBlock.textContent = "\1" + likeCountLiked;
-        else {
-          let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
-          likeBlock.textContent = (likeBlock[0] = endpoint, likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0");
-        }
+        likeBlock.textContent =
+          mutations[i + 4].payload.engagementToolbarStateEntityPayload.likeState === "TOOLBAR_LIKE_STATE_LIKED"
+            ? "\1" + likeCountLiked
+            : (
+              likeBlock[0] = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action,
+              likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0"
+            );
 
         isReply
           ? commentBlock.className = "c"
@@ -95,7 +95,7 @@
       (t.slice(p = t.indexOf('"LIKE","titl', p) + 16, t.indexOf('"', p)).replace("Mag ich", "").replaceAll(".", ",")) +
       "\3" + (
         e = (p = t.indexOf("contextualIn", 300000)) > 0
-          ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length == 4
+          ? (e = t.slice(p += 34, p = t.indexOf('"', p))).length === 4
             ? e[0] + "," + e.slice(1)
             : e.replaceAll(".", ",")
           : "-"
@@ -114,10 +114,7 @@
         n = "0123456789abcdef"[(e = t[--p]) >> 4] + "0123456789abcdef"[e % 16] + n,
         p
       );
-      headers = {
-        authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
-        "content-type": ""
-      };
+      authorization = "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n;
       oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
       return fetchNext(continuationNewest, 1, 0);
     });
@@ -128,21 +125,21 @@
 
   onscrollend = () => newRoot.scrollTop || fetchNext(continuationNewest, 1, newRoot.scrollTop = 0);
 
-  onclick = ({ target }) => {
-    let { localName } = target;
-    if (localName === "rtc") {
-      let key = target[0];
-      return key && (
+  onclick = ({ target }, $0) =>
+    ($0 = target.localName) === "rtc"
+      ? ($0 = target[0]) && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-          body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
-          headers,
+          headers: { authorization },
+          body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + $0 + '"}',
           method: "POST"
         }),
         target.textContent = "\1" + (+target.textContent.slice(1) + 1),
         target[0] = ""
+      )
+      : $0 === "img" && open(
+        newRoot.firstChild === target
+          ? "?v=" + target.currentSrc.slice(23, 34)
+          : "/" + target.nextSibling.data
       );
-   } else if (localName == "img")
-      return open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
-  }
 }
 ondragstart = () => !1;
