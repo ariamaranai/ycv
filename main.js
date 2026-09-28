@@ -5,10 +5,6 @@
   let headers;
   let continuationNewest;
   let continuationNext;
-
-  let isAutoLike;
-  chrome.runtime.sendMessage(0, m => isAutoLike = m);
-
   let _commentBlock = d.createElement("rb");
   _commentBlock.append("", d.createElement("s"), new Image, "", d.createElement("u"));
 
@@ -39,7 +35,8 @@
 
         if (isNewest) {
           let { commentId } = properties;
-          if (commentId === endCommentId) break;
+          if (commentId === endCommentId)
+            break;
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
         } else
@@ -60,20 +57,7 @@
           likeBlock.textContent = "\1" + likeCountLiked;
         else {
           let endpoint =  mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action;
-          likeBlock.textContent =
-            isAutoLike
-              ? (
-                fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-                  body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + endpoint + '"}',
-                  headers,
-                  method: "POST"
-                }),
-                "\1" + likeCountLiked
-              )
-              : (
-                likeBlock.nonce = endpoint,
-                likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0"
-            );
+          likeBlock.textContent = (likeBlock[0] = endpoint, likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0");
         }
 
         isReply
@@ -89,21 +73,23 @@
       resolve();
     });
 
-  d.addEventListener("DOMContentLoaded", async () => {
+  d.addEventListener("DOMContentLoaded", () => {
+    let elm = new Image;
+    elm.src = "//i.ytimg.com/vi/" + location.href.slice(-11) + "/hqdefault.jpg";
+
     let n = oldRoot.lastChild.childNodes;
     let e = n[0].childNodes;
     let t = n[n.length - 5].text;
     let p = t.indexOf('"viewCount"', 2500) + 66;
-    newRoot.innerHTML =
-      "<img src=//i.ytimg.com/vi/" +
-      location.href.slice(-11) +
-      "/hqdefault.jpg style=position:relative;z-index:1;width:120px;height:90px;border-radius:0><title>" +
-      e[1].content +
-      "</title><a href=" +
-      (e = e[6]).firstChild.href +
-      " target=_blank>\t" +
-      e.lastChild.getAttribute("content") +
-      "</a>\n\t\2" +
+
+    newRoot.appendChild(elm).setAttribute("style", "position:relative;z-index:1;width:120px;height:90px;border-radius:0");
+    newRoot.appendChild(d.createElement("title")).textContent = e[1].content;
+    newRoot.appendChild(elm = d.createElement("a")).href = (e = e[6]).firstChild.href;
+    elm.target = "_blank";
+    elm.textContent = "\t" + e.lastChild.getAttribute("content");
+
+    newRoot.append(
+      "\n\t\2" +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
       " \1" +
       (t.slice(p = t.indexOf('"LIKE","titl', p) + 16, t.indexOf('"', p)).replace("Mag ich", "").replaceAll(".", ",")) +
@@ -113,43 +99,39 @@
             ? e[0] + "," + e.slice(1)
             : e.replaceAll(".", ",")
           : "-"
-      ) +
-      (isAutoLike ? "<p class=P>\4" : "<p>\4");
-
-    if (e == "-") return;
-    continuationNewest = t.substr(t.indexOf("Eg0SC"), 100);
-    t = new Uint8Array(
-      await crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
-        (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
-        " 1 " +
-        (n = d.cookie).substr(n.indexOf("SAPISID") + 8, 34) +
-        " https://www.youtube.com"
-      ))
+      )
     );
+
+    if (e === "-") return;
+    crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
+      (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
+      " 1 " +
+      (n = d.cookie).substr(n.indexOf("SAPISID") + 8, 34) +
+      " https://www.youtube.com"
+    )).then(r => {
+      t = new Uint8Array(r);
+      while (
+        n = "0123456789abcdef"[(e = t[--p]) >> 4] + "0123456789abcdef"[e % 16] + n,
+        p
+      );
+      headers = {
+        authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
+        "content-type": ""
+      };
+      oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
+      return fetchNext(continuationNewest, 1, 0);
+    });
+    continuationNewest = t.slice(p = t.indexOf("Eg0SC", t.indexOf('"title":"Neueste"')), t.indexOf('"', p));
     n = "_u";
     p = 20;
-    while (
-      n = "0123456789abcdef"[(e = t[--p]) >> 4] + "0123456789abcdef"[e % 16] + n,
-      p
-    );
-    headers = {
-      authorization: "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n,
-      "content-type": ""
-    };
-    await fetchNext(continuationNewest, 1, 0);
-    oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
   }, { once: !0 });
 
-  onkeydown = e => e.keyCode == 116 && (
-    e.preventDefault(),
-    fetchNext(continuationNewest, 1, newRoot.scrollTop = 0)
-  );
+  onscrollend = () => newRoot.scrollTop || fetchNext(continuationNewest, 1, newRoot.scrollTop = 0);
 
-  onclick = e => {
-    let { target } = e;
+  onclick = ({ target }) => {
     let { localName } = target;
     if (localName === "u") {
-      let key = target.nonce;
+      let key = target[0];
       return key && (
         fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
@@ -157,31 +139,10 @@
           method: "POST"
         }),
         target.textContent = "\1" + (+target.textContent.slice(1) + 1),
-        target.nonce = ""
+        target[0] = ""
       );
    } else if (localName == "img")
       return open(newRoot.firstChild == target ? "?v=" + target.src.slice(23, 34) : "/" + target.nextSibling.data);
-    else if (localName == "p") {
-      chrome.runtime.sendMessage(isAutoLike = target.className = target.className ? "" : "p");
-      if (isAutoLike) {
-        let targets = newRoot.getElementsByTagName("u");
-        let i = 0;
-        while (i < targets.length) {
-          let target = targets[i];
-          let key = target.nonce;
-          key && (
-            fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
-              body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + key + '"}',
-              headers,
-              method: "POST"
-            }),
-            target.textContent = "\1" + (+target.textContent.slice(1) + 1),
-            target.nonce = ""
-          )
-          ++i;
-        }
-      }
-    }
   }
 }
 ondragstart = () => !1;

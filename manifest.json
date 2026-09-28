@@ -9,8 +9,6 @@
   "permissions": [
     "contextMenus",
     "declarativeNetRequest",
-    "scripting",
-    "storage",
     "system.display"
   ],
   "host_permissions": [
@@ -27,9 +25,10 @@
     "service_worker": "bg.js"
   },
   "content_scripts": [{
+    "matches": ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
     "css": ["main.css"],
     "js": ["main.js"],
-    "matches": ["https://www.youtube.com/watch?app=desktop&hl=de&persist_hl=1&v=*"],
+    "world": "MAIN",
     "run_at": "document_start"
   }],
   "action": {}

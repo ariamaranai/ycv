@@ -1,27 +1,11 @@
-chrome.runtime.onMessage.addListener((m, s, r) => {
-  chrome.storage.local.get("0", v => {
-    let videoIds = v[0];
-    let targetVideoId = s.tab.url.slice(-11);
-    if (m === 0)
-      r(videoIds.includes(targetVideoId))
-    else {
-      let index = videoIds.indexOf(targetVideoId);
-      index < 0
-        ? m && videoIds.push(targetVideoId)
-        : m || videoIds.splice(index, 1);
-      chrome.storage.local.set({ 0: videoIds });
-    }
-  });
-  return !0
-});
-chrome.contextMenus.onClicked.addListener((a, { windowId, url: windowUrl }) =>
+chrome.contextMenus.onClicked.addListener((info, { windowId, url: windowUrl }) =>
   chrome.system.display.getInfo((infos =>
     chrome.windows.get(windowId, window => {
       let workArea = infos[0].workArea;
       let workAreaWidth = workArea.width;
       let maxWindowWidth = workAreaWidth - 500;
       let windowWidth = window.width;
-      let url = a.linkUrl || a.frameUrl || windowUrl;
+      let url = info.linkUrl || info.frameUrl || windowUrl;
       chrome.windows.create({
         width: 500,
         height: workArea.height,
@@ -63,6 +47,5 @@ chrome.runtime.onInstalled.addListener(() => (
       "https://www.youtube.com/shorts/*",
       "https://youtu.be/*"
     ]
-  }),
-  chrome.storage.local.set({ 0: [] })
+  })
 ));
