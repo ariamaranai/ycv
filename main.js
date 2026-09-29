@@ -1,7 +1,8 @@
 {
   let d = document;
-  let newRoot = d.createElement("layer");
-  let oldRoot = d.replaceChild(newRoot, d.lastChild);
+  let root = d.createElement("layer");
+  let oldRoot = d.replaceChild(root, d.lastChild);
+  let base = d.createElement("base");
   let _commentBlock = d.createElement("rb");
   _commentBlock.append("", d.createElement("abbr"), new Image, "", d.createElement("rtc"));
   let commentFragment = new DocumentFragment;
@@ -12,11 +13,12 @@
   let continuationNext;
   let fetchNext = (continuation, isNewest, isReply) =>
     new Promise(async resolve => {
-      let r = await (await fetch("https://www.youtube.com/youtubei/v1/next?prettyPrint=0", {
+      let r = await (await fetch("next?prettyPrint=0", {
         headers: { "content-type": "", authorization },
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
         method: "POST"
       })).json();
+      console.log(r);
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
       if (isReply === 0) {
         let { continuationItemRenderer } = continuationItems.at(-1);
@@ -38,8 +40,8 @@
           i < 2 && (firstCommentId = commentId);
           commentFragment.appendChild(commentBlock);
         } else
-          commentFragment.childElementCount && newRoot.appendChild(commentFragment),
-          newRoot.appendChild(commentBlock);
+          commentFragment.hasChildNodes() && base.appendChild(commentFragment),
+          base.appendChild(commentBlock);
 
         let node = commentBlock.firstChild;
         node.data = commentEntityPayload.author.displayName + "　";
@@ -59,18 +61,22 @@
               likeBlock[0] = mutations[i + 3].payload.engagementToolbarSurfaceEntityPayload.likeCommand.innertubeCommand.performCommentActionEndpoint.action,
               likeCountLiked ? "\0" + toolbar.likeCountNotliked : "\0"
             );
-
         isReply
           ? commentBlock.className = "c"
           : mutations[i].payload.commentEntityPayload.toolbar.replyCount &&
             await fetchNext(continuationItems[i * .2 ^ 0].commentThreadRenderer.replies.commentRepliesRenderer.contents[0].continuationItemRenderer.continuationEndpoint.continuationCommand.token, 0, 1);
         i += 5;
       }
-      let { childElementCount } = commentFragment;
-      isNewest
-        ? (newRoot.insertBefore(commentFragment, childElementCount ? null : newRoot.querySelector("rb")), endCommentId = firstCommentId)
-        : childElementCount && newRoot.appendChild(commentFragment);
-      resolve();
+      commentFragment.hasChildNodes()
+        ? (
+          base.appendChild(commentFragment),
+          isNewest && (endCommentId = firstCommentId)
+        )
+        : isNewest && (
+          base.insertBefore(commentFragment, base.firstChild),
+          endCommentId = firstCommentId
+        );
+      return resolve();
     });
 
   d.addEventListener("DOMContentLoaded", () => {
@@ -82,13 +88,13 @@
     let t = n[n.length - 5].text;
     let p = t.indexOf('"viewCount"', 2500) + 66;
 
-    newRoot.appendChild(elm).setAttribute("style", "position:relative;z-index:1;width:120px;height:90px;border-radius:0");
-    newRoot.appendChild(d.createElement("title")).textContent = e[1].content;
-    newRoot.appendChild(elm = d.createElement("a")).href = (e = e[6]).firstChild.href;
+    root.appendChild(elm).setAttribute("style", "position:relative;z-index:1;width:120px;height:90px;border-radius:0");
+    root.appendChild(d.createElement("title")).textContent = e[1].content;
+    root.appendChild(elm = d.createElement("a")).href = (e = e[6]).firstChild.href;
     elm.target = "_blank";
     elm.textContent = "\t" + e.lastChild.getAttribute("content");
 
-    newRoot.append(
+    root.append(
       "\n\t\2" +
       t.slice(p, p = t.indexOf(" ", p)).replaceAll(".", ",") +
       " \1" +
@@ -115,20 +121,21 @@
         p
       );
       authorization = "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n;
-      oncontentvisibilityautostatechange = e => e.skipped || fetchNext(continuationNext, 0, 0);
+      oncontentvisibilityautostatechange = e => e.skipped || continuationNext && fetchNext(continuationNext, 0, 0);
       return fetchNext(continuationNewest, 1, 0);
     });
+    root.appendChild(base).href = "/youtubei/v1/";
     continuationNewest = t.slice(p = t.indexOf("Eg0SC", t.indexOf('"title":"Neueste"')), t.indexOf('"', p));
     n = "_u";
-    p = 20;
+    return p = 20;
   }, { once: !0 });
 
-  onscrollend = () => newRoot.scrollTop || fetchNext(continuationNewest, 1, newRoot.scrollTop = 0);
+  onscrollend = () => root.scrollTop || fetchNext(continuationNewest, 1, 0);
 
   onclick = ({ target }, $0) =>
     ($0 = target.localName) === "rtc"
       ? ($0 = target[0]) && (
-        fetch("https://www.youtube.com/youtubei/v1/comment/perform_comment_action?prettyPrint=0", {
+        fetch("comment/perform_comment_action?prettyPrint=0", {
           headers: { authorization },
           body: '{"context":{"client":{"clientName":1,"clientVersion":"1.1111111"}},"actions":"' + $0 + '"}',
           method: "POST"
@@ -137,7 +144,7 @@
         target[0] = ""
       )
       : $0 === "img" && open(
-        newRoot.firstChild === target
+        root.firstChild === target
           ? "?v=" + target.currentSrc.slice(23, 34)
           : "/" + target.nextSibling.data
       );
