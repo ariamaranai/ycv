@@ -107,26 +107,27 @@
       )
     );
 
-    if (e === "-") return;
-    crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
-      (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
-      " 1 " +
-      (n = d.cookie).substr(n.indexOf("SAPISID") + 8, 34) +
-      " https://www.youtube.com"
-    )).then(r => {
-      t = new Uint8Array(r);
-      while (
-        n = "0123456789abcdef"[(e = t[--p]) >> 4] + "0123456789abcdef"[e % 16] + n,
-        p
-      );
-      authorization = "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n;
-      oncontentvisibilityautostatechange = e => e.skipped || continuationNext && fetchNext(continuationNext, 0, 0);
-      return fetchNext(continuationNewest, 1, 0);
-    });
-    root.appendChild(base).href = "/youtubei/v1/";
-    continuationNewest = t.slice(p = t.indexOf("Eg0SC", t.indexOf('"title":"Neueste"')), t.indexOf('"', p));
-    n = "_u";
-    return p = 20;
+    return e === "-" || (
+      crypto.subtle.digest("SHA-1", (new TextEncoder).encode(
+        (n = oldRoot.firstChild.textContent).substr(n.indexOf("USER_SESSION", 450000) + 18, 21) +
+        " 1 " +
+        (n = d.cookie).substr(n.indexOf("SAPISID") + 8, 34) +
+        " https://www.youtube.com"
+      )).then(r => {
+        t = new Uint8Array(r);
+        while (
+          n = "0123456789abcdef"[(e = t[--p]) >> 4] + "0123456789abcdef"[e % 16] + n,
+          p
+        );
+        authorization = "SAPISIDHASH 1_" + n + " SAPISID1PHASH 1_" + n + " SAPISID3PHASH 1_" + n;
+        fetchNext(continuationNewest, 1, 0);
+        return oncontentvisibilityautostatechange = e => e.skipped || continuationNext && fetchNext(continuationNext, 0, 0);
+      }),
+      root.appendChild(base).href = "/youtubei/v1/",
+      continuationNewest = t.slice(p = t.indexOf("Eg0SC", t.indexOf('"title":"Neueste"')), t.indexOf('"', p)),
+      n = "_u",
+      p = 20
+    );
   }, { once: !0 });
 
   onscrollend = () => root.scrollTop || fetchNext(continuationNewest, 1, 0);
