@@ -18,7 +18,6 @@
         body: '{"context":{"client":{"clientName":1,"clientVersion":"2.1111111"}},"continuation":"' + continuation + '"}',
         method: "POST"
       })).json();
-      console.log(r);
       let { continuationItems } = r.onResponseReceivedEndpoints.at(-1)[isNewest ? "reloadContinuationItemsCommand" : "appendContinuationItemsAction"];
       if (isReply === 0) {
         let { continuationItemRenderer } = continuationItems.at(-1);
